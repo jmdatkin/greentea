@@ -357,7 +357,8 @@ const App = (function () {
     Renderer.start();
 
     const SocketIO = (function () {
-        const socket = io("http://192.168.1.226:9001");
+        // const socket = io("http://192.168.1.226:9001");
+        const socket = io("http://localhost:9001");
         console.log(socket);
 
         socket.on('textupdate', (data) => {
