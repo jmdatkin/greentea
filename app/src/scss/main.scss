@@ -16,6 +16,8 @@ html, body {
     outline: none;
     overflow: auto;
 
+    width: 600px;
+
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
@@ -24,8 +26,19 @@ html, body {
     position: absolute;
     font-size: 18px;
     font-family: sans-serif;
+    background: transparent;
 }
 
 .TextInput:focus {
     outline: 0;
+}
+
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+#coord-indicator {
+    position: absolute;
+    z-index: 999;
 }

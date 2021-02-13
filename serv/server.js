@@ -9,14 +9,20 @@ const io = require("socket.io")(http, {
 
 var texts = [];
 
+const sendTexts = function() {
+        io.emit('textupdate', texts)
+}
+
 io.on('connection', (socket) => {
     console.log("a user connected");
+    sendTexts();
     socket.on('text', (text) => {
         texts.push({
             user: socket.user,
             data: text
         });
-        io.emit('textupdate', texts);
+        // io.emit('textupdate', texts);
+        sendTexts();
     });
 });
 
