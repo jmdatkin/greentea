@@ -1,3 +1,4 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -31,7 +32,7 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             postcssOptions: {
-                                plugins: function() {
+                                plugins: function () {
                                     return [
                                         require('autoprefixer')
                                     ];
@@ -46,5 +47,11 @@ module.exports = {
                 ]
             }
         ]
-    }
+
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: 'src/index.html'
+        })
+    ]
 };
