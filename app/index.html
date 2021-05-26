@@ -1,15 +1,55 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    </head>
-    <body>
-        <div class="container">
-            <span id="coord-indicator">x: 0, y: 0</span>
-            <div class="canvas-wrapper">
-                <canvas id="main-canv"></canvas>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+</head>
+
+<body>
+    <div class="container">
+        <div id="DialogLayer">
+            <div class="dialog" id="left-sidebar">
+                <div class="dialog-section" id="coords">
+                    <span class="dialog-section-header">Location:</span>
+                    <span id="coord-indicator">x: 0, y: 0</span>
+                </div>
+                <div class="separator"></div>
+                <div class="dialog-section" id="color-picker">
+                    <span class="dialog-section-header">Text Color:</span>
+                    <div data-color="red" class="color-swatch">
+                    </div>
+                    <div data-color="orange" class="color-swatch">
+                    </div>
+                    <div data-color="green" class="color-swatch">
+                    </div>
+                    <div data-color="blue" class="color-swatch">
+                    </div>
+                    <div data-color="purple" class="color-swatch">
+                    </div>
+                    <div data-color="black" class="color-swatch">
+                    </div>
+                </div>
+            </div>
+            <div class="dialog" id="right-sidebar">
+                    <span class="dialog-section-header">Nickname:</span>
+                <div class="dialog-section" id="nickname">
+                    <input type="text" id="nickname-field" disabled/>
+                    <a id="nickname-toggle-edit"><i class="fas fa-pencil-alt"></i></a>
+                </div>
+                <div class="separator"></div>
+                <div class="dialog-section" id="connected-users">
+                    <span class="dialog-section-header">Connected Users:</span>
+                    <ul id="connected-users-list">
+                    </ul>
+                </div>
             </div>
         </div>
-        <script src="./bundle.js"></script>
-    </body>
+        <div class="canvas-wrapper">
+            <canvas id="main-canv"></canvas>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/9d4a1378d4.js" crossorigin="anonymous"></script>
+    <script src="./bundle.js"></script>
+</body>
+
 </html>
