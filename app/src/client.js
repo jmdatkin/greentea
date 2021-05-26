@@ -241,7 +241,7 @@ const InputField = (function () {
 
     //Check for enter
     const keypressHandler = function (e) {
-        if (e.code === 'Enter')
+        if (e.code === 'Enter' || e.code === 'NumpadEnter')
             submitHandler();
     };
 
@@ -430,7 +430,7 @@ const NicknameField = (function() {
     };
 
     const nicknameSubmit = e => {
-        if (e.code === 'Enter')
+        if (e.code === 'Enter' || e.code === 'NumpadEnter')
             e.target.blur();
     }
 
