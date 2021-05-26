@@ -1,9 +1,13 @@
+const fs = require("fs");
 const app = require("express");
-const http = require("http").Server(app);
-const io = require("socket.io")(http, {
+const https = require("https").createServer({
+	key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.key'),
+	cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.crt')
+},app);
+const io = require("socket.io")(https, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+	    origin: "https://jatkin.dev",
+	    methods: ["GET", "POST"]
     }
 });
 
@@ -43,6 +47,6 @@ io.on('connection', (socket) => {
 
 });
 
-http.listen(9001, () => {
+https.listen(9001, () => {
     console.log("listening on *:9001");
 });
