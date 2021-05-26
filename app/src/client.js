@@ -1,4 +1,3 @@
-const { Socket } = require("socket.io-client");
 const io = require("socket.io-client");
 const ievent = require("./ievent");
 
@@ -11,6 +10,7 @@ const FONT_SIZE = 32;
 const FONT_STRING = 'Veranda, sans-serif';
 
 let UserNick = "";
+let UserId = "";
 
 const COLORS = {
     "black": {
@@ -359,14 +359,22 @@ const ColorPicker = (function() {
 const UsersList = (function() {
     const listElement = $("#connected-users-list");
 
-    let userList = [];
+    let userList = {}
 
     const updateUsers = function(newUsers) {
-        userList = newUsers;
+        if (newUsers)
+            userList = newUsers;
         listElement.innerHTML = '';
-        newUsers.forEach(user => {
+        Object.keys(userList).forEach(userId => {
             let li = document.createElement('li');
-            li.textContent = user;
+            let nickString = userList[userId];
+
+            if (userId === UserId) {
+                nickString += " (YOU)";
+                // li.style.color = 'blue';   
+            }
+            
+            li.textContent = nickString;
             listElement.appendChild(li);
         });
         // newUsers.forEach(user => {
@@ -469,14 +477,14 @@ const Engine = (function () {
 
 
 const SocketIO = (function () {
-    // const socket = io("http://192.168.1.226:9001");
-    // const socket = io("http://localhost:9001");
     // const HOSTNAME = "https://jatkin.dev";
     const HOSTNAME = "http://127.0.0.1";
     const PORT = "9001";
     const url = `${HOSTNAME}:${PORT}`;
 
     const socket = io(url);
+
+    socket.emit("myIdRequest");
 
     console.log(socket);
 
@@ -487,6 +495,11 @@ const SocketIO = (function () {
     });
     
     socket.on("userUpdate", (users) => UsersList.updateUsers(users));
+
+    socket.on("helloId", id => {
+        UserId = id;
+        UsersList.updateUsers();
+    });
 
     const sendText = function (text) {
         console.log(`sending text: ${text.value}`);

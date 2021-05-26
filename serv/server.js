@@ -10,38 +10,45 @@ if (process.env.DEVELOPMENT) {
     DEV = true;
 }
 
-const https = DEV ? require("http").Server(app) :
-                                require("https").createServer(app);
-// const https = require("https").createServer({
-// 	key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.key'),
-// 	cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.crt')
-// },app);
+const https = DEV ?
+    require("http").Server(app) :   //Dev mode enabled
+    require("https").createServer({ //Production
+        key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.key'),
+        cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.crt')
+    }, app);
 const io = require("socket.io")(https, {
     cors: {
-	    origin: "http://127.0.0.1:9000",
-	    methods: ["GET", "POST"]
+        origin: DEV ? "http://127.0.0.1:9000" : "http://jatkin.dev",
+        methods: ["GET", "POST"]
     }
 });
 
 var texts = [];
 const connectedUsers = {};
 
-
-const sendTexts = function() {
-    io.emit('textUpdate', {texts: texts});
+const broadcastTexts = function () {
+    io.emit('textUpdate', { texts: texts });
 }
 
-const sendUserUpdate = function() {
-    io.emit("userUpdate", Object.values(connectedUsers));
+const broadcastUsers = function () {
+    io.emit("userUpdate", connectedUsers);
 };
 
+const supplyUserInitialId = function (socket) {
+    socket.emit("helloId", socket.id);
+};
+
+
 io.on('connection', (socket) => {
-    console.log("a user connected");
+    console.log("User connected");
 
-    connectedUsers[socket.id] = socket.id;
+    connectedUsers[socket.id] = socket.id.substring(0, 8);   //Initial nickname     
 
-    sendUserUpdate();
-    sendTexts();
+    broadcastUsers();
+    broadcastTexts();
+    supplyUserInitialId(socket);
+
+
     socket.on('text', (text) => {
         console.log(`Text from user ${socket.id}`);
         console.log(text);
@@ -49,20 +56,18 @@ io.on('connection', (socket) => {
             user: socket.id,
             data: text
         });
-        // io.emit('textupdate', texts);
-        sendTexts();
+        broadcastTexts();
     });
 
     socket.on('nicknameUpdate', (nick) => {
         connectedUsers[socket.id] = nick;
-        sendUserUpdate();
+        broadcastUsers();
     });
 
     socket.on('disconnect', (socket2) => {
         console.log(`User ${socket2.id} disconnected`);
-        // connectedUsers.splice(connectedUsers.indexOf(socket2.id));
         delete connectedUsers[socket.id];
-        sendUserUpdate();
+        broadcastUsers();
     });
 });
 
