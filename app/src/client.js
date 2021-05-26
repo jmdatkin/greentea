@@ -1,6 +1,8 @@
 const io = require("socket.io-client");
 const ievent = require("./ievent");
 
+const DEV = false;
+
 //Shortcut for querySelector
 const $ = x => document.querySelector(x);
 const $$ = x => document.querySelectorAll(x);
@@ -477,8 +479,7 @@ const Engine = (function () {
 
 
 const SocketIO = (function () {
-    const HOSTNAME = "https://jatkin.dev";
-    //const HOSTNAME = "http://127.0.0.1";
+    const HOSTNAME = DEV ? "http://127.0.0.1" : "https://jatkin.dev";
     const PORT = "9001";
     const url = `${HOSTNAME}:${PORT}`;
 
