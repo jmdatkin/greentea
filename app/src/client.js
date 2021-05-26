@@ -200,22 +200,26 @@ const InputField = (function () {
 
 
 const CanvasEvents = new ievent({delta: 81});
-CanvasEvents.addEvent(canvas, "mousedown", (e, i) => {
+const mouseDownHandler = (e, i) => {
+    let m = e.touches ? e.touches[0] : e;
     console.log(WorldCoords);
     i.store.put({
-        px: e.pageX,
-        py: e.pageY,
+        px: m.pageX,
+        py: m.pageY,
         wx: WorldCoords.x,
         wy: WorldCoords.y,
         drag: false
     });
     i.handlers[canvas]["mousemove"].activate();
-});
+};
+CanvasEvents.addEvent(canvas, "mousedown", mouseDownHandler);
+CanvasEvents.addEvent(canvas, "touchstart", mouseDownHandler);
 
-CanvasEvents.addEvent(canvas, "mousemove", (e, i) => {
+const mouseMoveHandler = (e, i) => {
+    let m = e.touches ? e.touches[0] : e;
     let store = i.store.get();
-    let cx = e.pageX,
-        cy = e.pageY;
+    let cx = m.pageX,
+        cy = m.pageY;
     let drag;
 
     dx = cx - store.px;
@@ -232,17 +236,22 @@ CanvasEvents.addEvent(canvas, "mousemove", (e, i) => {
     else
         drag = false;
     i.store.put({ drag: drag });
-}, false);
+};
+CanvasEvents.addEvent(canvas, "mousemove", mouseMoveHandler, false);
+CanvasEvents.addEvent(canvas, "touchmove", mouseMoveHandler, false);
 
-CanvasEvents.addEvent(canvas, "mouseup", (e, i) => {
+const mouseUpHandler = (e, i) => {
     if (!i.store.get("drag"))
         canvasClickHandler(e);
     i.handlers[canvas]["mousemove"].deactivate();
-});
+};
+CanvasEvents.addEvent(canvas, "mouseup", mouseUpHandler);
+CanvasEvents.addEvent(canvas, "touchend", mouseUpHandler);
 
 const canvasClickHandler = function (e) {
-    let x = e.pageX;
-    let y = e.pageY;
+    let m = e.touches ? e.touches[0] : e;
+    let x = m.pageX;
+    let y = m.pageY;
 
     InputField.set(x, y);
     InputField.unhide();
