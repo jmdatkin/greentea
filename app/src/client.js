@@ -10,7 +10,7 @@ const FONT_SIZE = 18;
 
 //Array storing text data
 let texts = [];
-let avg = {x: 0, y: 0};
+let avg = { x: 0, y: 0 };
 
 //Screen coordinates
 const WorldCoords = {
@@ -26,7 +26,7 @@ const ctx = canvas.getContext("2d");
 let c_width = 1600;
 let c_height = 900;
 
-const resize = function(w,h) {
+const resize = function (w, h) {
     c_width = w;
     c_height = h;
     canvas.width = c_width;
@@ -113,23 +113,23 @@ const Draw = {
         ctx.fillText(text.value, text.x - WorldCoords.x, text.y + FONT_SIZE - 1 - WorldCoords.y);
     },
 
-    drawAvg: function(x,y) {
-        let centerX = WorldCoords.x + c_width/2;
-        let centerY = WorldCoords.y + c_height/2;
+    drawAvg: function (x, y) {
+        let centerX = WorldCoords.x + c_width / 2;
+        let centerY = WorldCoords.y + c_height / 2;
 
-        let m = (y - centerY)/(x-centerX);
+        let m = (y - centerY) / (x - centerX);
 
         ctx.beginPath();
-        ctx.moveTo(centerX,centerY);
-        ctx.lineTo(x,y);
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(x, y);
         ctx.stroke();
 
         //y = m(x-x0) + y0
 
     },
 
-    clear: function() {
-        ctx.clearRect(0,0,c_width,c_height);
+    clear: function () {
+        ctx.clearRect(0, 0, c_width, c_height);
     }
 };
 
@@ -163,21 +163,25 @@ const InputField = (function () {
         hide();                 //Hide form (user has submitted)
     };
 
+    const submitHandler = function () {
+        let textObj = new Text(InputField.x + WorldCoords.x,
+            InputField.y + WorldCoords.y,
+            WorldCoords.z,
+            InputField.value);
+        console.log(textObj);
+        SocketIO.sendText(textObj);     //Send data to server
+        InputField.unfocus();           //Unfocus input area
+    };
+
     //Check for enter
     const keypressHandler = function (e) {
-        if (e.code === 'Enter') {
-            let textObj = new Text(InputField.x + WorldCoords.x,
-                InputField.y + WorldCoords.y,
-                WorldCoords.z,
-                InputField.value);
-            console.log(textObj);
-            SocketIO.sendText(textObj);     //Send data to server
-            InputField.unfocus();           //Unfocus input area
-        }
+        if (e.code === 'Enter')
+            submitHandler();
     };
 
     element.addEventListener("blur", blurHandler);
-    element.addEventListener("keypress", keypressHandler);;
+    element.addEventListener("submit", submitHandler);
+    element.addEventListener("keypress", keypressHandler);
 
     return {
         element: element,
@@ -199,7 +203,7 @@ const InputField = (function () {
 })();
 
 
-const CanvasEvents = new ievent({delta: 81});
+const CanvasEvents = new ievent({ delta: 81 });
 const mouseDownHandler = (e, i) => {
     let m = e.touches ? e.touches[0] : e;
     console.log(WorldCoords);
