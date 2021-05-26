@@ -18,7 +18,7 @@ const https = DEV ?
     }, app);
 const io = require("socket.io")(https, {
     cors: {
-        origin: DEV ? "http://127.0.0.1:9000" : "http://jatkin.dev",
+        origin: DEV ? "http://127.0.0.1:9000" : "https://jatkin.dev",
         methods: ["GET", "POST"]
     }
 });
@@ -31,6 +31,7 @@ const broadcastTexts = function () {
 }
 
 const broadcastUsers = function () {
+    console.log(connectedUsers);
     io.emit("userUpdate", connectedUsers);
 };
 

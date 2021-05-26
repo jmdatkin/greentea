@@ -1,7 +1,7 @@
 const io = require("socket.io-client");
 const ievent = require("./ievent");
 
-const DEV = false;
+const DEV = true;
 
 //Shortcut for querySelector
 const $ = x => document.querySelector(x);
