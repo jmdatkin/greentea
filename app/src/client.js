@@ -5,10 +5,21 @@ const ievent = require("./ievent");
 //Shortcut for querySelector
 const $ = x => document.querySelector(x);
 
+const GRID_SIZE = 50;
+const FONT_SIZE = 18;
+
 //Array storing text data
 let texts = [];
 let avg = {x: 0, y: 0};
 
+//Screen coordinates
+const WorldCoords = {
+    x: 0,
+    y: 0,
+    z: 0,
+};
+
+//Canavs DOM element
 const canvas = $("#main-canv");
 const ctx = canvas.getContext("2d");
 
@@ -20,21 +31,14 @@ const resize = function(w,h) {
     c_height = h;
     canvas.width = c_width;
     canvas.height = c_height;
-}
+};
 
-resize(window.innerWidth, window.innerHeight);
-
-const gridSize = 50;
 
 const floorMod = function (n, m) {
     return ((n % m) + m) % m;
 };
 
-const WorldCoords = {
-    x: 0,
-    y: 0,
-    z: 0,
-};
+
 
 class Text {
     constructor(x, y, z, value) {
@@ -51,9 +55,9 @@ const Draw = {
         const minorColor = "#e5e5e5";
         const majorColor = "#dfdfdf";
 
-        let majorGridSize = gridSize * 5;
-        let i = gridSize - floorMod(WorldCoords.x, gridSize);
-        let j = gridSize - floorMod(WorldCoords.y, gridSize);
+        let majorGridSize = GRID_SIZE * 5;
+        let i = GRID_SIZE - floorMod(WorldCoords.x, GRID_SIZE);
+        let j = GRID_SIZE - floorMod(WorldCoords.y, GRID_SIZE);
 
         //Minor gridlines: gridlines within each group of 5
         let ii = i;
@@ -61,14 +65,14 @@ const Draw = {
         while (ii <= c_width) {
             ctx.moveTo(ii, 0);
             ctx.lineTo(ii, c_height);
-            ii += gridSize;
+            ii += GRID_SIZE;
         }
 
         let jj = j;
         while (jj <= c_height) {
             ctx.moveTo(0, jj);
             ctx.lineTo(c_width, jj);
-            jj += gridSize;
+            jj += GRID_SIZE;
         }
 
         ctx.lineWidth = 2;
@@ -99,15 +103,14 @@ const Draw = {
     },
 
     drawText: function (text, color) {
-        let fontSize = 18;
         ctx.fillStyle = color;
         let dz = WorldCoords.z - text.z;
-        let thisFontSize = fontSize;
+        let thisFontSize = FONT_SIZE;
         let fontString = `${thisFontSize}px sans-serif`;
         ctx.font = fontString;
 
         //Adjust for offset between canvas text render and DOM style properties
-        ctx.fillText(text.value, text.x - WorldCoords.x, text.y + fontSize - 1 - WorldCoords.y);
+        ctx.fillText(text.value, text.x - WorldCoords.x, text.y + FONT_SIZE - 1 - WorldCoords.y);
     },
 
     drawAvg: function(x,y) {
@@ -145,8 +148,8 @@ const InputField = (function () {
         element.style.top = `${newY}px`;
     };
 
-    const hide = () => { element.classList.add("hidden"); };
-    const unhide = () => { element.classList.remove("hidden"); };
+    const hide = () => element.classList.add("hidden");
+    const unhide = () => element.classList.remove("hidden");
 
     const focus = () => element.focus();
     const unfocus = () => element.blur();
@@ -154,11 +157,13 @@ const InputField = (function () {
     hide();
     $(".canvas-wrapper").appendChild(element)
 
+    //Evt handler for textarea defocus
     const blurHandler = function (e) {
-        element.value = '';
-        hide();
+        element.value = '';     //Clear inputted text
+        hide();                 //Hide form (user has submitted)
     };
 
+    //Check for enter
     const keypressHandler = function (e) {
         if (e.code === 'Enter') {
             let textObj = new Text(InputField.x + WorldCoords.x,
@@ -166,8 +171,8 @@ const InputField = (function () {
                 WorldCoords.z,
                 InputField.value);
             console.log(textObj);
-            SocketIO.sendText(textObj);
-            InputField.unfocus();
+            SocketIO.sendText(textObj);     //Send data to server
+            InputField.unfocus();           //Unfocus input area
         }
     };
 
@@ -245,9 +250,6 @@ const canvasClickHandler = function (e) {
 };
 
 
-window.addEventListener("resize", () => {
-    resize(window.innerWidth, window.innerHeight);
-});
 
 const Engine = (function () {
     var iid;
@@ -283,11 +285,16 @@ const Engine = (function () {
     };
 })();
 
-Engine.start();
 
 const SocketIO = (function () {
     // const socket = io("http://192.168.1.226:9001");
-    const socket = io("http://localhost:9001");
+    // const socket = io("http://localhost:9001");
+    const HOSTNAME = "https://jatkin.dev";
+    const PORT = "9001";
+    const url = `${HOSTNAME}:${PORT}`;
+
+    const socket = io(url);
+
     console.log(socket);
 
     socket.on('textupdate', (data) => {
@@ -306,3 +313,10 @@ const SocketIO = (function () {
     };
 
 })();
+
+resize(window.innerWidth, window.innerHeight);
+window.addEventListener("resize", () => {
+    resize(window.innerWidth, window.innerHeight);
+});
+
+Engine.start();
