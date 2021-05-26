@@ -211,6 +211,7 @@ const mouseDownHandler = (e, i) => {
         drag: false
     });
     i.handlers[canvas]["mousemove"].activate();
+    i.handlers[canvas]["touchmove"].activate();
 };
 CanvasEvents.addEvent(canvas, "mousedown", mouseDownHandler);
 CanvasEvents.addEvent(canvas, "touchstart", mouseDownHandler);
@@ -244,6 +245,7 @@ const mouseUpHandler = (e, i) => {
     if (!i.store.get("drag"))
         canvasClickHandler(e);
     i.handlers[canvas]["mousemove"].deactivate();
+    i.handlers[canvas]["touchmove"].deactivate();
 };
 CanvasEvents.addEvent(canvas, "mouseup", mouseUpHandler);
 CanvasEvents.addEvent(canvas, "touchend", mouseUpHandler);
