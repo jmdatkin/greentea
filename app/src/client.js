@@ -477,8 +477,8 @@ const Engine = (function () {
 
 
 const SocketIO = (function () {
-    // const HOSTNAME = "https://jatkin.dev";
-    const HOSTNAME = "http://127.0.0.1";
+    const HOSTNAME = "https://jatkin.dev";
+    //const HOSTNAME = "http://127.0.0.1";
     const PORT = "9001";
     const url = `${HOSTNAME}:${PORT}`;
 
