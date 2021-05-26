@@ -4,13 +4,69 @@ const ievent = require("./ievent");
 
 //Shortcut for querySelector
 const $ = x => document.querySelector(x);
+const $$ = x => document.querySelectorAll(x);
 
 const GRID_SIZE = 50;
-const FONT_SIZE = 18;
+const FONT_SIZE = 32;
+const FONT_STRING = 'Veranda, sans-serif';
+
+let UserNick = "";
+
+const COLORS = {
+    "black": {
+        r: 0,
+        b: 0,
+        g: 0,   
+    },
+    "red": {
+        r: 202,
+        g: 15,
+        b: 15
+    },
+    "orange": {
+        r: 215,
+        g: 140,
+        b: 45
+    },
+    "green": {
+        r: 73,
+        g: 119,
+        b: 6
+    },
+    "blue": {
+        r: 0,
+        g: 0,
+        b: 255
+    },
+    "purple": {
+        r: 131,
+        g: 0,
+        b: 221
+    },
+    toRGB: function(c) {
+        let obj = this[c];
+        return `rgb(${obj.r},${obj.g},${obj.b})`;
+    },
+    toRGBA: function(c,a) {
+        let obj = this[c];
+        return `rgba(${obj.r},${obj.g},${obj.b},${a})`;
+    }
+};
 
 //Array storing text data
 let texts = [];
 let avg = { x: 0, y: 0 };
+
+let selectedColor = {
+    _color: "black",
+    get color() {
+        return this._color;
+    },
+    set color(x) {
+        this._color = x;
+        InputField.setColor(x);
+    }
+}
 
 //Screen coordinates
 const WorldCoords = {
@@ -41,11 +97,12 @@ const floorMod = function (n, m) {
 
 
 class Text {
-    constructor(x, y, z, value) {
+    constructor(x, y, z, value, color) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.value = value;
+        this.color = color;
         this.time = Date.now();
     }
 }
@@ -106,11 +163,11 @@ const Draw = {
         ctx.fillStyle = color;
         let dz = WorldCoords.z - text.z;
         let thisFontSize = FONT_SIZE;
-        let fontString = `${thisFontSize}px sans-serif`;
+        let fontString = `${thisFontSize}px ${FONT_STRING}`;
         ctx.font = fontString;
 
         //Adjust for offset between canvas text render and DOM style properties
-        ctx.fillText(text.value, text.x - WorldCoords.x, text.y + FONT_SIZE - 1 - WorldCoords.y);
+        ctx.fillText(text.value, text.x - WorldCoords.x, text.y + FONT_SIZE - 2 - WorldCoords.y);
     },
 
     drawAvg: function (x, y) {
@@ -136,6 +193,9 @@ const Draw = {
 const InputField = (function () {
 
     const element = document.createElement('input');
+    element.maxLength = 255;
+    element.style.fontSize = `${FONT_SIZE}px`;
+    element.style.fontFamily = FONT_STRING;
     element.classList.add("TextInput");
 
     var x = 0,
@@ -154,6 +214,10 @@ const InputField = (function () {
     const focus = () => element.focus();
     const unfocus = () => element.blur();
 
+    const setColor = newColor => {
+        element.style.color = COLORS.toRGB(newColor);
+    };
+
     hide();
     $(".canvas-wrapper").appendChild(element)
 
@@ -167,7 +231,7 @@ const InputField = (function () {
         let textObj = new Text(InputField.x + WorldCoords.x,
             InputField.y + WorldCoords.y,
             WorldCoords.z,
-            InputField.value);
+            InputField.value, selectedColor.color);
         console.log(textObj);
         SocketIO.sendText(textObj);     //Send data to server
         InputField.unfocus();           //Unfocus input area
@@ -190,6 +254,7 @@ const InputField = (function () {
         unhide: unhide,
         focus: focus,
         unfocus: unfocus,
+        setColor: setColor,
         get value() {
             return element.value;
         },
@@ -234,6 +299,7 @@ const mouseMoveHandler = (e, i) => {
 
     if (dist > store.delta) {
         drag = true;
+        canvas.classList.add("dragged");
         WorldCoords.x = store.wx - dx;
         WorldCoords.y = store.wy - dy;
         $("#coord-indicator").textContent = `x: ${WorldCoords.x}, y: ${WorldCoords.y}`;
@@ -246,6 +312,7 @@ CanvasEvents.addEvent(canvas, "mousemove", mouseMoveHandler, false);
 CanvasEvents.addEvent(canvas, "touchmove", mouseMoveHandler, false);
 
 const mouseUpHandler = (e, i) => {
+    canvas.classList.remove("dragged");
     if (!i.store.get("drag"))
         canvasClickHandler(e);
     i.handlers[canvas]["mousemove"].deactivate();
@@ -265,10 +332,110 @@ const canvasClickHandler = function (e) {
 };
 
 
+const ColorPicker = (function() {
+    const swatches = Array.from($$(".color-swatch"));
+    const SquareSize = 25;
+    let selected;
+
+    console.log(swatches);
+
+    swatches.forEach(swatch => {
+        let thisColor = swatch.dataset.color;
+        swatch.style.backgroundColor = COLORS.toRGB(thisColor);
+        swatch.style.width = `${SquareSize}px`;
+        swatch.style.height = `${SquareSize}px`;
+        swatch.addEventListener("click", (e) => {
+            swatches.forEach(s => {
+                s.classList.remove("color-swatch-selected");
+            });
+            e.target.classList.add("color-swatch-selected");
+            selected = e.target;
+            selectedColor.color = thisColor;
+        });
+    });
+
+})();
+
+const UsersList = (function() {
+    const listElement = $("#connected-users-list");
+
+    let userList = [];
+
+    const updateUsers = function(newUsers) {
+        userList = newUsers;
+        listElement.innerHTML = '';
+        newUsers.forEach(user => {
+            let li = document.createElement('li');
+            li.textContent = user;
+            listElement.appendChild(li);
+        });
+        // newUsers.forEach(user => {
+        //     let tr = document.createElement('tr');
+        //     let td = document.createElement('td');
+        //     td.textContent = user;
+        //     tr.appendChild(td);
+        //     listElement.appendChild(tr);
+        // });
+    }
+
+    return {
+        updateUsers: updateUsers
+    };
+})();
+
+const NicknameField = (function() {
+    const inputElement = $("#nickname-field");
+    const editButton = $("#nickname-toggle-edit");
+
+    let editable = false;
+    let nick = "";
+    inputElement.value = '';
+
+    const enableEdit = () => {
+        inputElement.classList.add("editable");
+        inputElement.removeAttribute("disabled");
+        editable = true;
+    };
+
+    const disableEdit = () => {
+        inputElement.classList.remove("editable");
+        inputElement.setAttribute("disabled","");
+        editable = false;
+    }
+
+    const editClick = () => {
+        enableEdit();
+        inputElement.focus();
+        inputElement.select();
+    };
+
+    const nicknameBlur = e => {
+        disableEdit();
+        UserNick = nick;
+        SocketIO.nicknameUpdate();
+    };
+
+    const nicknameChange = e => {
+        nick = e.target.value;
+    };
+
+    const nicknameSubmit = e => {
+        if (e.code === 'Enter')
+            e.target.blur();
+    }
+
+    editButton.addEventListener("click", editClick);
+    inputElement.addEventListener("change", nicknameChange);
+    inputElement.addEventListener("blur", nicknameBlur);
+    inputElement.addEventListener("keydown", nicknameSubmit);
+    
+})();
+
+
 
 const Engine = (function () {
     var iid;
-    const persistTime = 5500;
+    const persistTime = 7500;
     const fadeDelta = 300;
 
     const step = function () {
@@ -280,7 +447,7 @@ const Engine = (function () {
             // console.log(textObj);
             let dTime = now - textObj.time;
             let alpha = dTime < persistTime ? 1.0 : Math.max(0, fadeDelta - (dTime - persistTime)) / fadeDelta;
-            let color = `rgba(0,0,0,${alpha}`;
+            let color = COLORS.toRGBA(textObj.color, alpha);//`rgba(0,0,0,${alpha}`;
             Draw.drawText(textObj, color);
         });
         window.requestAnimationFrame(step);
@@ -304,7 +471,8 @@ const Engine = (function () {
 const SocketIO = (function () {
     // const socket = io("http://192.168.1.226:9001");
     // const socket = io("http://localhost:9001");
-    const HOSTNAME = "https://jatkin.dev";
+    // const HOSTNAME = "https://jatkin.dev";
+    const HOSTNAME = "http://127.0.0.1";
     const PORT = "9001";
     const url = `${HOSTNAME}:${PORT}`;
 
@@ -312,19 +480,27 @@ const SocketIO = (function () {
 
     console.log(socket);
 
-    socket.on('textupdate', (data) => {
+    socket.on('textUpdate', (data) => {
         texts = data.texts;
         avg = data.avg;
         console.log('text update');
     });
+    
+    socket.on("userUpdate", (users) => UsersList.updateUsers(users));
 
     const sendText = function (text) {
         console.log(`sending text: ${text.value}`);
+        console.log(text);
         socket.emit('text', text);
-    }
+    };
+
+    const nicknameUpdate = function() {
+        socket.emit('nicknameUpdate', UserNick);
+    };
 
     return {
-        sendText: sendText
+        sendText: sendText,
+        nicknameUpdate: nicknameUpdate
     };
 
 })();

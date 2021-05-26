@@ -6,13 +6,141 @@ html, body {
     overflow: hidden;
 }
 
+body {
+    font-family: 'Veranda', sans-serif;
+}
+
 .container {
     width: 100%;
     height: 100%;
 }
 
+.layer {
+    position: absolute;
+    pointer-events: none;
+    // width: 100%;
+    // height: 100%;
+}
+
+.canvas-wrapper {
+    pointer-events: auto !important;
+}
+
+.dialog {
+    background-color: rgba(0.2,0.2,0.2,0.65);
+    color: rgb(245, 245, 245);
+    border-radius: 3px;
+    border: solid 1px rgba(0.0,0.0,0.0,1.0);
+    padding: 15px;
+}
+
+.dialog-section {
+    // flex-grow:1;
+}
+
+#coords {
+}
+
+.separator {
+    height: 0;
+    width: 100%;
+    flex-shrink: 2;
+    border-top: groove 1px rgb(199, 199, 199);
+    margin: 15px 0;
+}
+
+#left-sidebar {
+    // display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 175px;
+}
+
+#color-picker {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    border: solid 1px #222;
+    margin: 5px;
+    box-sizing: border-box;
+}
+
+.color-swatch-selected {
+    border: solid 2px #fff;
+}
+
+#right-sidebar {
+}
+
+#nickname {
+    display: flex;
+    flex-direction: row;
+}
+
+#nickname-field {
+    background-color: transparent;
+    border: 0;
+    color: #fff;
+    outline: 0;
+    width: auto;
+    flex-grow: 2;
+}
+
+#nickname-field.editable {
+    border-bottom: solid 1px #fff;
+}
+
+#nickname-toggle-edit {
+    cursor: pointer;
+}
+
+#connected-users-list {
+    margin-left: 0;
+    padding-left: 20px;
+    list-style: square;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+
+.dialog-section-header {
+    color:rgb(235, 235, 235);
+    display: block;
+    width: 100%;
+    font-weight: 700;
+    margin-bottom: 10px;
+    // break-after: always;
+}
+
+
+
+#CanvasLayer {
+    z-index: -1;
+}
+
+#DialogLayer {
+    // height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    padding: 7px;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
+#DialogLayer > .dialog {
+    pointer-events: auto;
+}
+
+
 .TextInput {
     border: none;
+    // border-bottom: solid 3px #222;
     outline: none;
     overflow: auto;
 
@@ -24,7 +152,6 @@ html, body {
     padding: 0;
     margin: 0;
     position: absolute;
-    font-size: 18px;
     font-family: sans-serif;
     background: transparent;
 }
@@ -38,7 +165,10 @@ html, body {
     visibility: hidden;
 }
 
+.dragged {
+    cursor: grab;
+}
+
 #coord-indicator {
-    position: absolute;
-    z-index: 999;
+    font-family: monospace;
 }
