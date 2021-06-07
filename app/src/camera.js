@@ -1,12 +1,14 @@
-import Coords from './coords';
+import Vector from './vector';
 import { mat4 } from './gl-matrix';
 
 const Camera = (function() {
-    const coords = new Coords();
+    const coords = new Vector();
 
-    const midpoint = {
-        x: window.innerWidth/2,
-        y: window.innerHeight/2
+    const midpoint = function() {
+        return new Vector(
+            coords.x + window.innerWidth/2,
+            coords.y + window.innerHeight/2
+        );
     };
 
     const getPerspectiveMatrix = function() {
@@ -33,7 +35,7 @@ const Camera = (function() {
         },
         
         coords: coords,
-        midpoint: midpoint,
+        get midpoint() { return midpoint(); },
         getPerspectiveMatrix: getPerspectiveMatrix
     };
 })();

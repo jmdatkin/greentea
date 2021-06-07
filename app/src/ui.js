@@ -4,7 +4,7 @@ import Text from './text';
 import SocketIO from './socket-manager';
 import { $, $$ } from './util';
 import settings from './settings';
-import Coords from './coords';
+import Vector from './vector';
 import { vec3 } from './gl-matrix';
 
 
@@ -47,20 +47,20 @@ var InputField = (function (camera, canvas) {
 
     const submitHandler = function () {
 
-        let inputCoords = new Coords(InputField.x, InputField.y, camera.coords.z);
+        let inputCoords = new Vector(InputField.x, InputField.y, camera.coords.z);
 
-        let tempCoords = new Coords(camera.coords.x - camera.midpoint.x, camera.coords.y - camera.midpoint.y, camera.coords.z);
+        // let tempCoords = new Vector(camera.coords.x - camera.midpoint.x, camera.coords.y - camera.midpoint.y, camera.coords.z);
 
-        let mtx = tempCoords.getInverseTransform();
+        // let mtx = tempCoords.getInverseTransform();
 
-        inputCoords.applyTransform(mtx);
+        // inputCoords.applyTransform(mtx);
                 
-        let textObj = new Text(inputCoords.x, inputCoords.y, inputCoords.z,
+        // let textObj = new Text(inputCoords.x, inputCoords.y, inputCoords.z,
+            // InputField.value, ColorPicker.selectedColor.color);
+        let textObj = new Text(inputCoords.x + camera.coords.x,
+            InputField.y + camera.coords.y,
+            camera.coords.z,
             InputField.value, ColorPicker.selectedColor.color);
-        // let textObj = new Text(inputCoords.x + camera.coords.x,
-        //     InputField.y + camera.coords.y,
-        //     camera.coords.z,
-        //     InputField.value, ColorPicker.selectedColor.color);
         console.log(textObj);
         SocketIO.emit("text", textObj);
         InputField.unfocus();           //Unfocus input area

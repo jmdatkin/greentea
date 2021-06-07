@@ -1,6 +1,6 @@
 import { $, $$, floorMod } from './util';
 import settings from './settings';
-import Coords from './coords';
+import Vector from './vector';
 import ievent from './ievent';
 import Camera from './camera';
 
@@ -112,20 +112,22 @@ const Canvas = (function (camera,inputField) {
 
 
         drawText: function (text, color) {
-            let thisCoords = new Coords(text.x, text.y, text.z);
-            let shiftedCameraCoords = new Coords(camera.coords.x - camera.midpoint.x, camera.coords.y - camera.midpoint.y, camera.coords.z);
+            // let thisCoords = new Vector(text.x, text.y, text.z);
+            // let shiftedCameraCoords = new Vector(camera.coords.x - camera.midpoint.x, camera.coords.y - camera.midpoint.y, camera.coords.z);
 
-            let cameraTransform = camera.getPerspectiveMatrix();//shiftedCameraCoords.getTransformMatrix();
+            // let cameraTransform = camera.getPerspectiveMatrix();//shiftedCameraCoords.getTransformMatrix();
 
-            thisCoords.applyTransform(cameraTransform);            
+            // thisCoords.applyTransform(cameraTransform);            
                        
             // ctx.textBaseline = "bottom";
             ctx.fillStyle = color;
-            let thisFontSize = settings.fontSize*(camera.coords.z/text.z);
+            // let thisFontSize = settings.fontSize*(camera.coords.z/text.z);
+            let thisFontSize = settings.fontSize/camera.coords.z;
             ctx.font = `${thisFontSize}px ${settings.fontFace}`;
 
             //Adjust for offset between canvas text render and DOM style properties
-            ctx.fillText(text.value, thisCoords.x, thisCoords.y + fontSize - 2);
+            // ctx.fillText(text.value, thisCoords.x, thisCoords.y + fontSize - 2);
+            ctx.fillText(text.value, text.x - coords.x, text.y + fontSize - 2 - coords.y);
         },
 
 
@@ -140,8 +142,19 @@ const Canvas = (function (camera,inputField) {
 
 
     canvas.addEventListener("wheel", function (e) {
-        coords.z = Math.max(0, coords.z + e.deltaY / 1000);
-        $("#coord-indicator").textContent = `x: ${coords.x / 5}, y: ${coords.y / 5}, z: ${coords.z / 5}`;
+        let dz = e.deltaY/1000;//Math.max(0, coords.z + e.deltaY / 1000);
+
+        let s = 100;
+
+
+        let dx = e.pageX/(s*dz);
+        let dy = e.pageY/(s*dz);
+
+        // camera.coords.x += dx;
+        // camera.coords.y += dy;
+        camera.coords.z = Math.max(0, coords.z + dz);
+
+        $("#coord-indicator").textContent = `x: ${coords.x}, y: ${coords.y}, z: ${coords.z}`;
     });
 
 

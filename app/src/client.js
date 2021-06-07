@@ -3,10 +3,10 @@ import ievent from './ievent';
 import SocketIO from './socket-manager';
 import Text from './text';
 import { vec4, mat4 } from "./gl-matrix";
-import Coords from "./coords";
+import Vector from "./vector";
 import Canvas from "./canvas";
 import Camera from './camera';
-import { InputField, UsersList } from './dialog-components';
+import { InputField, UsersList } from './ui';
 
 const DEV = true;
 
@@ -14,18 +14,15 @@ const DEV = true;
 const $ = x => document.querySelector(x);
 const $$ = x => document.querySelectorAll(x);
 
-
 let UserNick = "";
 let UserId = "";
 
 //Array storing text data
 let texts = [];
-let avg = { x: 0, y: 0 };
 
 const events = new ievent({ delta: 81 });
 const mouseDownHandler = (e, i) => {
     let m = e.touches ? e.touches[0] : e;
-
     
     i.store.put({
         px: m.pageX,
@@ -56,10 +53,10 @@ const mouseMoveHandler = (e, i) => {
         drag = true;
         Canvas.canvas.classList.add("dragged");
 
-        Camera.moveTo(store.wx + dx, store.wy + dy);
+        Camera.moveTo(store.wx - dx, store.wy - dy);
         // coords.x = store.wx - dx;
         // coords.y = store.wy - dy;
-        $("#coord-indicator").textContent = `x: ${Camera.coords.x / 5}, y: ${Camera.coords.y / 5}, z: ${Camera.coords.z / 5}`;
+        $("#coord-indicator").textContent = `x: ${Camera.coords.x}, y: ${Camera.coords.y}, z: ${Camera.coords.z}`;
     }
     else
         drag = false;
@@ -77,6 +74,7 @@ const mouseUpHandler = (e, i) => {
 };
 events.addEvent(Canvas.canvas, "mouseup", mouseUpHandler);
 events.addEvent(Canvas.canvas, "touchend", mouseUpHandler);
+
 const canvasClickHandler = function (e) {
     let m = e.touches ? e.touches[0] : e;
     let x = m.pageX;
@@ -100,46 +98,8 @@ SocketIO.addListener("helloId", (id) => {
 });
 
 SocketIO.addListener("userUpdate", (data) => {
-    UsersList.updateUsers();
+    UsersList.updateUsers(data);
 });
-
-
-const createAffineTransform = function (coords, x) {
-    const T = vec4.fromValues(coords[0], coords[1], coords[2], 1);
-
-    const p = coords[0];
-    const q = coords[1];
-    const r = coords[2];
-
-    const T1 = mat4.fromValues(
-        1, 0, 0, p,
-        0, 1, 0, q,
-        0, 0, 1, r,
-        0, 0, 0, 1
-    );
-    const S1 = mat4.fromValues(
-        x, 0, 0, 0,
-        0, x, 0, 0,
-        0, 0, x, 0,
-        0, 0, 0, 1
-    );
-    const T2 = mat4.fromValues(
-        1, 0, 0, -p,
-        0, 1, 0, -q,
-        0, 0, 1, -r,
-        0, 0, 0, 1
-    );
-
-    mat4.mul(T1, T1, S1);
-    mat4.mul(T1, T1, T2);
-    mat4.mul(T1, T1, T);
-
-    return T1;
-};
-
-
-
-
 
 const Engine = (function () {
     var iid;
@@ -181,13 +141,6 @@ const Engine = (function () {
     };
 })();
 
-
-
-
-// resize(window.innerWidth, window.innerHeight);
-// window.addEventListener("resize", () => {
-//     resize(window.innerWidth, window.innerHeight);
-// });
 
 Engine.init();
 Engine.start();

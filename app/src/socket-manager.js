@@ -21,8 +21,15 @@ const SocketIO = (function () {
     };
 
     const emit = function(name, data) {
+        console.log("emitting");
         socket.emit(name,data);
     };
+
+    // socket.on('textUpdate', (data) => {
+    //     texts = data.texts;
+    //     avg = data.avg;
+    //     console.log('text update');
+    // });
 
 
     const sendText = function (text) {
