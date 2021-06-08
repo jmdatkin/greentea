@@ -1,3 +1,3 @@
 // import 'bootstrap';
 import './scss/app.scss';
-import './client';
+import './main';

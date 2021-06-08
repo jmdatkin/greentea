@@ -1,11 +1,10 @@
 import Camera from './camera';
 import Canvas from './canvas';
 import Text from './text';
-import SocketIO from './socket-manager';
+import SocketIO from './network-controller';
 import { $, $$ } from './util';
 import settings from './settings';
 import Vector from './vector';
-import { vec3 } from './gl-matrix';
 
 
 var InputField = (function (camera, canvas) {

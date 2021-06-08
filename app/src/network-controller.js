@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import settings from './settings';
-import { UsersList } from './dialog-components';
+import { UsersList } from './ui';
 
 const SocketIO = (function () {
     const HOSTNAME = settings.developmentMode ? "http://127.0.0.1" : "https://jatkin.dev";
