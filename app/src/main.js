@@ -88,9 +88,6 @@ const mouseMoveHandler = (e, i) => {
                 y: store.wy - dy
             });
 
-            // Camera.moveTo(store.wx - dx, store.wy - dy);
-            // coords.x = store.wx - dx;
-            // coords.y = store.wy - dy;
         }
         else
             drag = false;

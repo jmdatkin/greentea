@@ -65,15 +65,13 @@ const Canvas = (function (camera) {
         let majorGridSize = scaledGridSize * 5;
         let majorMajorGridSize = majorGridSize * 5;
 
-        const scaleAlpha = (a, z, c) => 0.5*((c - z) / c);
+        const scaleAlpha = (a, z, c) => 0.15*((c - z) / c);
 
         const baseMinorAlpha = 0.45;
         const scaledMinorAlpha = scaleAlpha(baseMinorAlpha, tz, modSize);
 
 
         const minorColor = `rgba(1.0, 1.0, 1.0, ${scaledMinorAlpha})`;
-
-        console.log(minorColor);
 
         const baseMajorAlpha = 0.5;
         const scaledMajorAlpha = scaleAlpha(baseMajorAlpha, tz, modSize*2);
@@ -82,7 +80,7 @@ const Canvas = (function (camera) {
 
 
         const baseMMajorAlpha = 0.65;
-        const scaledMMajorAlpha = scaleAlpha(baseMMajorAlpha, tz, modSize*4);
+        const scaledMMajorAlpha = scaleAlpha(baseMMajorAlpha, tz, modSize*3);
 
         const mMajorColor = `rgba(1.0, 1.0, 1.0, ${scaledMMajorAlpha})`;
 

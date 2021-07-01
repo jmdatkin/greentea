@@ -13,9 +13,14 @@ class QuadShape extends Shape {
     }
 
     draw(ctx) {
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'white';
+        ctx.lineCap = "butt";
+        ctx.lineWidth = 3;
         ctx.strokeRect(
             this.x, this.y, this.w, this.h
         );
+        ctx.fillRect(this.x,this.y,this.w,this.h);
     }
 }
 
