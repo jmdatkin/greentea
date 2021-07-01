@@ -55,38 +55,39 @@ const Canvas = (function (camera) {
         let ty = store.y;
         let tz = store.z;
 
+        let modSize = 5;
 
-        let b = 50;
-        let c = 10;
+        while (tz >= modSize)
+            tz /= modSize;
 
-        while (tz >= c)
-            tz /= c;
-
-        const scaleAlpha = (a, z) => a * (c - z) / c;
-        // const scaleAlpha2 = (a, z) => 0.5 * a * Math.log10(50 - z);
-        // const scaleAlpha3 = (a, z) => {
-        //     let t = (Math.tanh((c - z) / b) + 1) / 2;
-        //     return a * t;
-        // };
-
-
-        const baseMinorAlpha = 0.45;
-        const scaledMinorAlpha = scaleAlpha(baseMinorAlpha, tz);
-
-
-        const minorColor = `rgba(1.0, 1.0, 1.0, ${scaledMinorAlpha})`;
-
-
-        const baseMajorAlpha = 0.5;
-        const scaledMajorAlpha = scaleAlpha(baseMajorAlpha, tz * 5);
-
-        const majorColor = `rgba(1.0, 1.0, 1.0, ${scaledMajorAlpha})`;
-
-        let a = 1.0;
 
         let scaledGridSize = gridSize / tz;
         let majorGridSize = scaledGridSize * 5;
         let majorMajorGridSize = majorGridSize * 5;
+
+        const scaleAlpha = (a, z, c) => 0.5*((c - z) / c);
+
+        const baseMinorAlpha = 0.45;
+        const scaledMinorAlpha = scaleAlpha(baseMinorAlpha, tz, modSize);
+
+
+        const minorColor = `rgba(1.0, 1.0, 1.0, ${scaledMinorAlpha})`;
+
+        console.log(minorColor);
+
+        const baseMajorAlpha = 0.5;
+        const scaledMajorAlpha = scaleAlpha(baseMajorAlpha, tz, modSize*2);
+
+        const majorColor = `rgba(1.0, 1.0, 1.0, ${scaledMajorAlpha})`;
+
+
+        const baseMMajorAlpha = 0.65;
+        const scaledMMajorAlpha = scaleAlpha(baseMMajorAlpha, tz, modSize*4);
+
+        const mMajorColor = `rgba(1.0, 1.0, 1.0, ${scaledMMajorAlpha})`;
+
+        let a = 1.0;
+
 
         if (majorGridSize <= gridSize) {
             scaledGridSize *= 5;
@@ -103,7 +104,7 @@ const Canvas = (function (camera) {
         drawGrid(store, majorGridSize);
 
         ctx.lineWidth = 1;
-        ctx.strokeStyle = majorColor;
+        ctx.strokeStyle = mMajorColor;
         drawGrid(store, majorMajorGridSize);
     };
 
@@ -128,26 +129,30 @@ const Canvas = (function (camera) {
 
 
     canvas.addEventListener("wheel", function (e) {
-        let dz = e.deltaY / 1000;//Math.max(0, coords.z + e.deltaY / 1000);
+        let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
+        let z = Store.store.z;
+        let dz = delta*z/(z*4);
 
-        let s = 100;
 
+        let dx = (e.pageX + Store.store.x)/z;
+        let dy = (e.pageY + Store.store.y)/z;
 
-        let dx = e.pageX / (s * dz);
-        let dy = e.pageY / (s * dz);
+        let scale = Math.max(0.25,Store.store.z + dz);
 
-        // camera.coords.x += dx;
-        // camera.coords.y += dy;
-        // camera.coords.z = Math.max(0, coords.z + dz);
+        dx = e.pageX + 2*Store.store.x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
+        dy = e.pageY + 2*Store.store.y - scale*dy;
+
         Store.publish("view-move", {
-            z: Math.max(0, Store.store.z + dz)
+            x: dx,
+            y: dy,
+            z: scale
         });
 
-        $("#coord-indicator").textContent = `x: ${coords.x}, y: ${coords.y}, z: ${coords.z}`;
     });
 
     Store.subscribe("view-move", function (store) {
         clear();
+        $("#coord-indicator").textContent = `x: ${store.x}, y: ${store.y}, z: ${store.z}`;
         drawAdaptiveGrid(store);
     });
 

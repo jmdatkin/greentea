@@ -91,7 +91,6 @@ const mouseMoveHandler = (e, i) => {
             // Camera.moveTo(store.wx - dx, store.wy - dy);
             // coords.x = store.wx - dx;
             // coords.y = store.wy - dy;
-            $("#coord-indicator").textContent = `x: ${Camera.coords.x}, y: ${Camera.coords.y}, z: ${Camera.coords.z}`;
         }
         else
             drag = false;

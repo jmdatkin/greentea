@@ -1,5 +1,5 @@
 export default {
-    gridSize: 50,
+    gridSize: 150,
     fontSize: 32,
     fontFace: 'Veranda, sans-serif',
     colors: {
