@@ -16,15 +16,22 @@ const https = DEV ?
         key: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.key'),
         cert: fs.readFileSync('/opt/bitnami/letsencrypt/certificates/jatkin.dev.crt')
     }, app);
+
 const io = require("socket.io")(https, {
     cors: {
         origin: DEV ? "http://127.0.0.1:9000" : "https://jatkin.dev",
-        methods: ["GET", "POST"]
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
+var shapes = [];
 var texts = [];
 const connectedUsers = {};
+
+const broadcastShapes = function () {
+    io.emit('shapeUpdate', { shapes: shapes });
+}
 
 const broadcastTexts = function () {
     io.emit('textUpdate', { texts: texts });
@@ -47,8 +54,22 @@ io.on('connection', (socket) => {
 
     broadcastUsers();
     broadcastTexts();
+    broadcastShapes();
     supplyUserInitialId(socket);
 
+    socket.on('newShape', (shape) => {
+        console.log(`Shape from user ${socket.id}`);
+        console.log(shape);
+        shapes.push({
+            user: socket.id,
+            data: shape
+        });
+        broadcastShapes();
+    });
+
+    socket.on('hello', () => {
+        console.log("Hello!");
+    });
 
     socket.on('text', (text) => {
         console.log(`Text from user ${socket.id}`);
@@ -74,6 +95,6 @@ io.on('connection', (socket) => {
 
 
 
-https.listen(9001, () => {
+https.listen(9001, '0.0.0.0', () => {
     console.log("listening on *:9001");
 });

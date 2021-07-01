@@ -52,7 +52,7 @@ const mouseDownHandler = (e, i) => {
     if (MODE === "move") {
         i.store.put({
             px: m.pageX,
-            py: m.pageY,
+            py: m.pageY - e.target.offsetTop,
             wx: Store.store.x,
             wy: Store.store.y,
             drag: false
@@ -61,7 +61,7 @@ const mouseDownHandler = (e, i) => {
     else if (MODE === "rect") {
         i.store.put({
             px: m.pageX,
-            py: m.pageY,
+            py: m.pageY - e.target.offsetTop,
             wx: Store.store.x,
             wy: Store.store.y,
             drag: false
@@ -82,7 +82,7 @@ const mouseMoveHandler = (e, i) => {
 
     if (MODE === "move") {
         let cx = m.pageX,
-            cy = m.pageY;
+            cy = m.pageY - e.target.offsetTop;
         let drag;
 
         let dx = cx - store.px;
@@ -106,9 +106,13 @@ const mouseMoveHandler = (e, i) => {
         i.store.put({ drag: drag });
     }
     else if (MODE === "rect") {
+            Canvas.canvas.classList.add("dragged-rect");
+
         let dx = m.pageX - store.px;
-        let dy = m.pageY - store.py;
-        let tempShape = new QuadShape(store.px, store.py, dx, dy);
+        let dy = m.pageY - store.py - e.target.offsetTop;
+        let nx = store.px + Store.store.x,
+            ny = store.py + Store.store.y
+        let tempShape = new QuadShape(nx, ny, dx, dy);
         Store.publish("shape-draw-progress", {
             tempShape: tempShape
         });
@@ -118,7 +122,9 @@ events.addEvent(Canvas.canvas, "mousemove", mouseMoveHandler, false);
 events.addEvent(Canvas.canvas, "touchmove", mouseMoveHandler, false);
 
 const mouseUpHandler = (e, i) => {
-    Canvas.canvas.classList.remove("dragged");
+    let MODE = Store.store.mode;
+
+    Canvas.canvas.classList.remove("dragged","dragged-rect");
     if (!i.store.get("drag"))
         canvasClickHandler(e);
     i.handlers[Canvas.canvas]["mousemove"].deactivate();
@@ -132,9 +138,16 @@ const canvasClickHandler = function (e) {
     let x = m.pageX;
     let y = m.pageY;
 
-    InputField.set(x, y);
-    InputField.unhide();
-    InputField.focus();
+    let MODE = Store.store.mode;
+
+    if (MODE === "rect") {
+        console.log(Store.store.tempShape);
+        SocketIO.emit("hello");
+        SocketIO.emit("newShape", Store.store.tempShape);
+    }
+    // InputField.set(x, y);
+    // InputField.unhide();
+    // InputField.focus();
 };
 
 SocketIO.addListener("textUpdate", (data) => {

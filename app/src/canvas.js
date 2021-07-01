@@ -3,6 +3,7 @@ import settings from './settings';
 import Vector from './vector';
 import Camera from './camera';
 import Store from './store';
+import { QuadShape } from './shape';
 
 const Canvas = (function (camera) {
     const canvas = $("#main-canv");
@@ -116,6 +117,16 @@ const Canvas = (function (camera) {
         ctx.fillText(text.value, text.x - coords.x, text.y + fontSize - 2 - coords.y);
     };
 
+    const drawShapes = function(store) {
+        store.shapeData.shapes.forEach((val) => {
+            let {x,y,w,h} = val.data;
+            x -= Store.store.x;
+            y -= Store.store.y;
+            let newShape = new QuadShape(x,y,w,h);
+            newShape.draw(ctx);
+        });
+    }
+
 
     const clear = function () {
         ctx.clearRect(0, 0, width, height);
@@ -127,10 +138,15 @@ const Canvas = (function (camera) {
         Store.publish('view-move');
     });
 
+
+    Store.subscribe('shapeUpdate', function(store) {
+        drawShapes(store);
+    });
+
     canvas.addEventListener("wheel", function (e) {
         let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
         let z = Store.store.z;
-        let dz = delta*z/20;
+        let dz = delta;//delta*z/20;
 
 
         let dx = (e.pageX + Store.store.x)/z;
@@ -144,7 +160,7 @@ const Canvas = (function (camera) {
         Store.publish("view-move", {
             x: dx,
             y: dy,
-            z: lerp(z,scale,0.35)
+            z: scale
         });
 
     });
@@ -152,12 +168,18 @@ const Canvas = (function (camera) {
     Store.subscribe("view-move", function (store) {
         clear();
         drawAdaptiveGrid(store);
+        drawShapes(store);
     });
 
     Store.subscribe("shape-draw-progress", function(store) {
         clear();
         drawAdaptiveGrid(store);
-        store.tempShape.draw(ctx);
+        drawShapes(store);
+        let nx = store.tempShape.x - Store.store.x;
+        let ny = store.tempShape.y - Store.store.y;
+        let myNewShape = new QuadShape(nx,ny,store.tempShape.w,store.tempShape.h);
+        myNewShape.draw(ctx);
+        // store.tempShape.draw(ctx);
     });
 
     return {

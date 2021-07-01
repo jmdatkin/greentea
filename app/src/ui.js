@@ -136,6 +136,7 @@ const UsersList = (function () {
     let userList = {}
 
     const updateUsers = function (newUsers) {
+        return;
         if (newUsers)
             userList = newUsers;
         listElement.innerHTML = '';

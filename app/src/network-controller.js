@@ -1,5 +1,6 @@
 import io from "socket.io-client";
 import settings from './settings';
+import Store from './store';
 import { UsersList } from './ui';
 
 const SocketIO = (function () {
@@ -10,6 +11,7 @@ const SocketIO = (function () {
     const socket = io(url);
 
     socket.emit("myIdRequest");
+    socket.emit("hello");
 
     console.log(socket);
 
@@ -25,6 +27,11 @@ const SocketIO = (function () {
         socket.emit(name,data);
     };
 
+    socket.on('shapeUpdate', data => {
+        Store.publish('shapeUpdate', {
+            shapeData: data
+        });
+    });
     // socket.on('textUpdate', (data) => {
     //     texts = data.texts;
     //     avg = data.avg;
