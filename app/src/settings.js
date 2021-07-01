@@ -1,6 +1,8 @@
 export default {
     gridSize: 150,
     fontSize: 32,
+    minZoom: 0.25,
+    maxZoom: 100,
     fontFace: 'Veranda, sans-serif',
     colors: {
         "black": {

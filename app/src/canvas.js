@@ -131,13 +131,13 @@ const Canvas = (function (camera) {
     canvas.addEventListener("wheel", function (e) {
         let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
         let z = Store.store.z;
-        let dz = delta*z/(z*4);
+        let dz = delta*z/20;
 
 
         let dx = (e.pageX + Store.store.x)/z;
         let dy = (e.pageY + Store.store.y)/z;
 
-        let scale = Math.max(0.25,Store.store.z + dz);
+        let scale = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
 
         dx = e.pageX + 2*Store.store.x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
         dy = e.pageY + 2*Store.store.y - scale*dy;
