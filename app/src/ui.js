@@ -160,6 +160,21 @@ const UsersList = (function () {
     };
 })();
 
+const CoordIndicator = (function() {
+    const element = $("#coord-indicator");
+
+    const update = function(x,y,z) {
+        x = x.toFixed(2);
+        y = y.toFixed(2);
+        z = z.toFixed(2);
+        element.textContent = `x: ${x}, y: ${y}, z: ${z}`;
+    };
+
+    return {
+        update: update
+    };
+})();
+
 const NicknameField = (function () {
     const inputElement = $("#nickname-field");
     const editButton = $("#nickname-toggle-edit");
@@ -208,4 +223,4 @@ const NicknameField = (function () {
 
 })();
 
-export { InputField, ColorPicker, UsersList, NicknameField };
+export { InputField, ColorPicker, UsersList, NicknameField, CoordIndicator };

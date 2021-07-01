@@ -1,4 +1,7 @@
-html, body {
+$app-menu-bar-height: 35px;
+
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -7,8 +10,101 @@ html, body {
 }
 
 body {
-    font-family: 'Veranda', sans-serif;
+    font-family: "Veranda", sans-serif;
 }
+
+button {
+    background-color: #333;
+    border: solid 1px #555;
+    color: #fff;
+}
+
+.app-menu-bar-wrapper {
+    position: fixed;
+    width: 100%;
+}
+
+#app-menu-subbar {
+    height: 25px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+}
+
+#app-menu-subbar-left {
+    display: flex;
+
+}
+
+#app-menu-subbar-left::before {
+    content: '';
+    display: block;
+    width: 100%;
+    transform: skewX(-10deg) scaleX(1.2) translateX(-10px);
+    background: #222222; /* Old browsers */
+    background: -moz-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(
+        to bottom,
+        #222222 0%,
+        #303030 55%,
+        #474747 100%
+    ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#474747',GradientType=0 ); /* IE6-9 */
+
+}
+
+#app-menu-bar {
+    display: flex;
+    width: 100%;
+    height: $app-menu-bar-height;
+
+    background: #222222; /* Old browsers */
+    background: -moz-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(
+        to bottom,
+        #222222 0%,
+        #303030 55%,
+        #474747 100%
+    ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#474747',GradientType=0 ); /* IE6-9 */
+
+    color: #fff;
+    box-sizing: border-box;
+}
+
+#coord-indicator {
+    width: 200px;
+    font-family: serif;
+}
+
+.app-menu-bar-item {
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 10pt;
+    line-height: 175%;
+}
+
+.app-menu-bar-component {
+    min-width: 200px;
+}
+
+.app-title {
+    font-weight: 700;
+    font-size: 12pt;
+    margin-right: 20px;
+    line-height: 150%;
+}
+
+.app-logo {
+    background: url("./logo_white.png") no-repeat 0 0;
+    background-size: 25px;
+    background-position: center;
+    width: 35px;
+    height: 35px;
+}
+
 
 .container {
     width: 100%;
@@ -24,13 +120,17 @@ body {
 
 .canvas-wrapper {
     pointer-events: auto !important;
+    position:absolute;
+    top: $app-menu-bar-height;
+    // box-sizing: border-box;
+    height: calc(100% - #{$app-menu-bar-height});
 }
 
 .dialog {
-    background-color: rgba(0.2,0.2,0.2,0.65);
+    background-color: rgba(0.2, 0.2, 0.2, 0.65);
     color: rgb(245, 245, 245);
     border-radius: 5px;
-    border: solid 1px rgba(0.0,0.0,0.0,1.0);
+    border: solid 1px rgba(0, 0, 0, 1);
     margin: 0 5px;
     // padding: 15px;
     flex-direction: column;
@@ -46,9 +146,6 @@ body {
 .dialog-button {
     width: 50px;
     height: 50px;
-}
-
-#coords {
 }
 
 .separator {
@@ -73,13 +170,13 @@ body {
 #color-picker {
     display: flex;
     flex-direction: row;
-    justify-content:  flex-start;
+    justify-content: flex-start;
     flex-wrap: wrap;
 }
 
 .color-swatch {
     border: solid 1px #222;
-    margin: 5px;
+    margin: 0 5px;
     box-sizing: border-box;
     cursor: pointer;
 }
@@ -88,12 +185,11 @@ body {
     border: solid 2px #fff;
 }
 
-
 #nickname {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between
+    justify-content: space-between;
 }
 
 #nickname-field {
@@ -132,7 +228,7 @@ body {
 }
 
 .dialog-section-header {
-    color:rgb(235, 235, 235);
+    color: rgb(235, 235, 235);
     display: block;
     width: 100%;
     font-weight: 700;
@@ -146,13 +242,13 @@ body {
     // content: ":";
 }
 
-
 #CanvasLayer {
     z-index: -1;
 }
 
 #DialogLayer {
     // height: 100%;
+    z-index: 1;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -171,7 +267,6 @@ body {
 #DialogLayer > .dialog {
     pointer-events: auto;
 }
-
 
 .TextInput {
     border: none;
@@ -204,6 +299,3 @@ body {
     cursor: grab;
 }
 
-#coord-indicator {
-    font-family: monospace;
-}

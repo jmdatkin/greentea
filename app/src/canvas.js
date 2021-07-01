@@ -150,7 +150,6 @@ const Canvas = (function (camera) {
 
     Store.subscribe("view-move", function (store) {
         clear();
-        $("#coord-indicator").textContent = `x: ${store.x}, y: ${store.y}, z: ${store.z}`;
         drawAdaptiveGrid(store);
     });
 

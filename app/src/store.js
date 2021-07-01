@@ -2,7 +2,8 @@ const Store = (function() {
     const store = {
         x: 0,
         y: 0,
-        z: 1
+        z: 1,
+        mode: 'move'
     };
 
     const events = {};
@@ -18,10 +19,13 @@ const Store = (function() {
     const subscribe = function(event, callback) {
         if (!events.hasOwnProperty(event)) {
             events[event] = [];
-            return events[event].push(callback);
         }
-        else
-            console.error(`Event '${event}' already subscribed`);
+        return events[event].push(callback);
+
+        //We allow for more than 1 handler per event
+
+        // else
+        //     console.error(`Event '${event}' already subscribed`);
     };
     
     return {

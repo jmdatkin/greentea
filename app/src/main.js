@@ -8,7 +8,7 @@ import { $ } from "./util";
 import Canvas from "./canvas";
 // import { drawAdaptiveGrid, drawText, clear } from "./draw";
 import Camera from './camera';
-import { InputField, UsersList } from './ui';
+import { InputField, UsersList, CoordIndicator } from './ui';
 import Store from "./store";
 import { QuadShape } from "./shape";
 
@@ -29,6 +29,10 @@ $("#rect-mode").addEventListener("click", () => {
     Store.publish("mode-change", {
         mode: 'rect'
     });
+});
+
+Store.subscribe('view-move', (store) => { 
+    CoordIndicator.update(store.x,store.y,store.z);
 });
 
 const events = new ievent({ delta: 81 });
