@@ -2,7 +2,7 @@ export default {
     gridSize: 50,
     fontSize: 32,
     minZoom: 0.25,
-    maxZoom: 100,
+    maxZoom: 1200,
     fontFace: 'Veranda, sans-serif',
     colors: {
         "black": {

@@ -1,4 +1,4 @@
-import { $, $$, floorMod } from './util';
+import { $, $$, floorMod, lerp } from './util';
 import settings from './settings';
 import Vector from './vector';
 import Camera from './camera';
@@ -122,9 +122,10 @@ const Canvas = (function (camera) {
     };
 
 
-    window.addEventListener("resize", () => resize(window.innerWidth, window.innerHeight));
-
-
+    window.addEventListener("resize", () => {
+        resize(window.innerWidth, window.innerHeight);
+        Store.publish('view-move');
+    });
 
     canvas.addEventListener("wheel", function (e) {
         let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
@@ -143,7 +144,7 @@ const Canvas = (function (camera) {
         Store.publish("view-move", {
             x: dx,
             y: dy,
-            z: scale
+            z: lerp(z,scale,0.35)
         });
 
     });

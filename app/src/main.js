@@ -31,6 +31,14 @@ $("#rect-mode").addEventListener("click", () => {
     });
 });
 
+$("#home").addEventListener("click", () => {
+    Store.publish("view-move", {
+        x: 0,
+        y: 0,
+        z: 1,
+    });
+});
+
 Store.subscribe('view-move', (store) => { 
     CoordIndicator.update(store.x,store.y,store.z);
 });
@@ -150,6 +158,7 @@ SocketIO.addListener("userUpdate", (data) => {
 
 const init = function () {
     Canvas.resize(window.innerWidth, window.innerHeight);
+    Store.publish('view-move');
 };
 
 init();

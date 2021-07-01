@@ -5,4 +5,10 @@ const floorMod = function (n, m) {
     return ((n % m) + m) % m;
 };
 
-export { $, $$, floorMod };
+let lerp = function(a,b,x) {
+    a = a || 0;
+    b = b || 0;
+    return a + x*(b-a);
+};
+
+export { $, $$, floorMod, lerp };
