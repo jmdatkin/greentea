@@ -120,8 +120,22 @@ const Canvas = (function (camera) {
     const drawShapes = function(store) {
         store.shapeData.shapes.forEach((val) => {
             let {x,y,w,h} = val.data;
-            x -= Store.store.x;
-            y -= Store.store.y;
+
+            w /= Store.store.z;
+            h /= Store.store.z;
+            x /= 50;
+            y /= 50;
+            // x += Store.store.x;
+            // y += Store.store.y;
+            x /= Store.store.z;
+            y /= Store.store.z;
+            // x = val.data.x - 2*Store.store.x + Store.store.z*x;
+            // y = val.data.y - 2*Store.store.y + Store.store.z*y;
+
+      
+            x -= Store.store.x*Store.store.z;
+            y -= Store.store.y*Store.store.z;
+
             let newShape = new QuadShape(x,y,w,h);
             newShape.draw(ctx);
         });
@@ -146,7 +160,7 @@ const Canvas = (function (camera) {
     canvas.addEventListener("wheel", function (e) {
         let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
         let z = Store.store.z;
-        let dz = delta;//delta*z/20;
+        let dz = delta*z/20;
 
 
         let dx = (e.pageX + Store.store.x)/z;
@@ -175,8 +189,8 @@ const Canvas = (function (camera) {
         clear();
         drawAdaptiveGrid(store);
         drawShapes(store);
-        let nx = store.tempShape.x - Store.store.x;
-        let ny = store.tempShape.y - Store.store.y;
+        let nx = (store.tempShape.x - Store.store.x)/50;
+        let ny = (store.tempShape.y - Store.store.y)/50;
         let myNewShape = new QuadShape(nx,ny,store.tempShape.w,store.tempShape.h);
         myNewShape.draw(ctx);
         // store.tempShape.draw(ctx);
