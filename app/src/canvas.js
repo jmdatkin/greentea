@@ -10,6 +10,9 @@ const Canvas = (function (camera) {
 
     fabric.Object.prototype.objectCaching = false;
 
+
+    const gridCanvas = $('#grid-canv');
+    const ctx = gridCanvas.getContext('2d');
     const canvas = new fabric.Canvas('main-canv');
 
 
@@ -19,7 +22,6 @@ const Canvas = (function (camera) {
     let width = 1600;
     let height = 900;
 
-    const coords = camera.coords;
 
     const unitSize = settings.unitSize;
     const fontSize = settings.fontSize;
@@ -28,6 +30,8 @@ const Canvas = (function (camera) {
     const resize = function (w, h) {
         width = w;
         height = h;
+        gridCanvas.width = width;
+        gridCanvas.height = height;
         canvas.setWidth(width); //FabricJS
         canvas.setHeight(height);
     };
@@ -53,6 +57,7 @@ const Canvas = (function (camera) {
 
         let ii = i;
         let line;
+        ctx.beginPath();
         while (ii <= width) {             //Vertical lines
             line = new fabric.Line(
                 [ii,0,ii,height],
@@ -61,9 +66,9 @@ const Canvas = (function (camera) {
                     stroke: 'black'
                 }
             );
-            grid.add(line);
-            // ctx.moveTo(ii, 0)
-            // ctx.lineTo(ii, height);
+            // grid.add(line);
+            ctx.moveTo(ii, 0)
+            ctx.lineTo(ii, height);
             ii += size;
         }
 
@@ -76,13 +81,15 @@ const Canvas = (function (camera) {
                     stroke: 'black'
                 }
             );
-            grid.add(line);
+            ctx.moveTo(0,jj);
+            ctx.lineTo(width,jj);
             jj += size;
         }
-
+        ctx.stroke();
     };
 
     const drawAdaptiveGrid = function (store) {
+        ctx.clearRect(0,0,width,height);
         grid = new fabric.Group();
         // const minorColor = "#e5e5e5";
         // const majorColor = "#dfdfdf";
@@ -131,16 +138,16 @@ const Canvas = (function (camera) {
             majorMajorUnitSize *= 5;
         }
 
-        // ctx.lineWidth = 1;
-        // ctx.strokeStyle = minorColor;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = minorColor;
         drawGrid(store, scaledUnitSize);
 
-        // ctx.lineWidth = 1;
-        // ctx.strokeStyle = majorColor;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = majorColor;
         drawGrid(store, majorUnitSize);
 
-        // ctx.lineWidth = 1;
-        // ctx.strokeStyle = mMajorColor;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = mMajorColor;
         drawGrid(store, majorMajorUnitSize);
 
         // canvas.add(grid);
@@ -186,7 +193,7 @@ const Canvas = (function (camera) {
 
     const zoomTo = function(z) {
         let T = canvas.viewportTransform;
-        T[3] = z;
+        // T[3] = z;
     };
 
 
