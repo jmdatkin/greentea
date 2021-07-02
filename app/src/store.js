@@ -1,3 +1,5 @@
+import { ptou } from "./util";
+
 const Store = (function() {
     const store = {
         x: 0,
@@ -34,6 +36,16 @@ const Store = (function() {
 
         get store() {
             return Object.assign({}, store);
+        },
+
+        virtual: {
+            get x_mid() {
+                return store.x + ptou(window.innerWidth/2);
+            },
+
+            get y_mid() {
+                return store.y + ptou(window.innerHeight/2);
+            }
         }
     };
 })();

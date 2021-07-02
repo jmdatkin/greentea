@@ -148,73 +148,50 @@ const Canvas = (function (camera) {
 
         let {x,y,z} = Store.store;
 
-        let [cx, cy] = [ptou(e.pageX), ptou(e.pageY)];
+        let [cx, cy] = [ptou(e.pageX), ptou(e.pageY+canvas.offsetTop)];      //Mouse cursor position
 
-        let dz = delta*z/20;
+        let dz = delta*z/20;                                //Change in z
 
-        let scale = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
-        let ratio = scale/z;//z;//scale/z;
+        let z2 = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
+;
 
-        let [dx, dy] = [cx + x, cy + y];
+        let tx = -z2 / z * (cx - x) + cx;
+        let ty = -z2 / z * (cy - y) + cy;
 
-        dx /= z;
-        dy /= z;
+        x = tx;
+        y = ty;
+;
 
-        // let dx = cx/ratio;
-        // let dy = cy/ratio;
 
-        // console.log(dx);
-
-        // x -= scale*dx;
-        // y -= scale*dy;
-
-        // x += cx;
-        // x += cy;
-
-        // x *= ratio;
-        // y *= ratio;
+        // let dx = cx;
+        // let dy = cy;
 
         // x -= cx;
         // y -= cy;
 
-        // x /= ratio;
-        // y /= ratio;
+        // dx /= z;
+        // dy /= z;
 
-        // let dx = (cx + x)/z;        
-        // let dy = (cy + y)/z;
+        // x += dx*z2;
+        // y += dy*z2;
 
-        // let scale = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
+        // let tx = x+cx;
+        // let ty = y+cy;
 
-        // dx *= scale;
-        // dy *= scale;
+        // tx /= z;
+        // ty /= z;
 
-        // let dx = scale*cx;
-        // let dy = cy;
-        
-        // x += dx;
-        // y += dy;
+        // tx += cx;
+        // ty += cy;
 
-        // x << 1;
-        // y << 1;
-        // x += cx;
-        // y += cy;
-        // x -= dx;
-        // y -= dy;
+        // x = tx;
+        // y = ty;
 
-        dx = cx + x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
-        // dy = cy + y - scale*dy;
-
-        // let dx = (ptou(e.pageX) - x)/scale;
-        // let dy = (ptou(e.pageY) - y)/scale;
-
-
-        // dx = ptou(e.pageX) + 2*x + scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
-        // dy = ptou(e.pageY) + 2*y + scale*dy;
 
         Store.publish("view-move", {
             x: x,
             y: y,
-            z: scale
+            z: z2
         });
 
     });
@@ -223,16 +200,25 @@ const Canvas = (function (camera) {
         clear();
         drawAdaptiveGrid(store);
         drawShapes(store);
+        ctx.beginPath();
+        ctx.arc(utop(Store.virtual.x_mid),utop(Store.virtual.y_mid),15,0,2*Math.PI);
+        ctx.closePath();
+        ctx.fillStyle = 'black';
+        ctx.fill();
     });
 
     Store.subscribe("shape-draw-progress", function(store) {
         clear();
         drawAdaptiveGrid(store);
         drawShapes(store);
-        let nx = (store.tempShape.x - Store.store.x)/50;
-        let ny = (store.tempShape.y - Store.store.y)/50;
-        let myNewShape = new QuadShape(nx,ny,store.tempShape.w,store.tempShape.h);
-        myNewShape.draw(ctx);
+
+
+        store.tempShape.draw(ctx);
+
+        // let nx = (store.tempShape.x - Store.store.x)/50;
+        // let ny = (store.tempShape.y - Store.store.y)/50;
+        // let myNewShape = new QuadShape(nx,ny,store.tempShape.w,store.tempShape.h);
+        // myNewShape.draw(ctx);
         // store.tempShape.draw(ctx);
     });
 

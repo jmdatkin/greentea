@@ -1,5 +1,6 @@
 import Store from './store';
-import { utop } from './util';
+import Transform from './transform';
+import { ptou, utop } from './util';
 
 class Shape {
     constructor() { }
@@ -27,31 +28,33 @@ class QuadShape extends Shape {
             th = this.h;
 
 
+        let posVec = Transform.positionVector(tx,ty,1);
+        let screenMtx = Transform.screenMtx();
+
+        let mulVec = Transform.mul(posVec,screenMtx);
+
+        // tx += Store.store.x;
+        // ty += Store.store.y;
+
+        tx += Store.store.x;
+        ty += Store.store.y;
+
+        tx += ptou(window.innerWidth/2);
+        ty += ptou(window.innerHeight/2);
+
         
-        tx += tx/Store.store.z;
-        ty += ty/Store.store.z;
-
-
-        // tx += Store.store.x*Store.store.z;
-        // ty += Store.store.y*Store.store.z;
-
- //       let ratio = Object.z/Store.store.z;
- //     tx *= ratio;
-
-        // tx /= Store.store.z;
-        // ty /= Store.store.z;
-        // tw /= Store.store.z;
-        // th /= Store.store.z;
-
-        // tx -= Store.store.x*Store.store.z;
-        // ty -= Store.store.y*Store.store.z;
+        tx /= -Store.store.z;
+        ty /= -Store.store.z;
+        tw /= Store.store.z;
+        th /= Store.store.z;
 
 
 
-        tx = utop(tx);
-        ty = utop(ty);
+        tx = utop(tx);//mulVec[0]);
+        ty = utop(ty);//mulVec[1]);
         tw = utop(tw);
         th = utop(th);
+
 
         ctx.strokeRect(
             tx, ty, tw, th

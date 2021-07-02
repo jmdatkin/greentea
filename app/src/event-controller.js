@@ -30,6 +30,7 @@ const BindButtonEvents = function () {
 
 const BindStoreEvents = function () {
     Store.subscribe('view-move', (store) => {
+        // console.log(store);
         CoordIndicator.update(store.x, store.y, store.z);
     });
 };
@@ -118,11 +119,11 @@ const BindMouseEvents = function () {
         else if (MODE === "rect") {
             Canvas.canvas.classList.add("dragged-rect");
 
-            let dx = ptou(m.pageX)*Store.store.z - EventGroupStore.px;
-            let dy = ptou(m.pageY - e.target.offsetTop)*Store.store.z - EventGroupStore.py;
+            let sel_width = (ptou(m.pageX) - EventGroupStore.px)*Store.store.z; 
+            let sel_height = (ptou(m.pageY - e.target.offsetTop) - EventGroupStore.py)*Store.store.z;
             let nx = EventGroupStore.px + Store.store.x,
                 ny = EventGroupStore.py + Store.store.y
-            let tempShape = new QuadShape(nx, ny, dx, dy);
+            let tempShape = new QuadShape(nx, ny, sel_width, sel_height);
             Store.publish("shape-draw-progress", {
                 tempShape: tempShape
             });
