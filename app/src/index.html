@@ -4,10 +4,16 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- <script type='text/javascript' src='knockout-3.5.1.js'></script> -->
     <title>GreenTea</title>
 </head>
 
 <body>
+    <div data-bind="component: 'GTApp'"></div>
+    <!-- <GTApp></GTApp> -->
     <div class="container">
         <div class="app-header-wrapper">
             <div id="app-menu-bar">
@@ -26,20 +32,20 @@
                     <button id="home">Home</button>
                 </div>
                 <div class="app-menu-bar-item app-menu-bar-component">
-                <div id="color-picker">
-                    <div data-color="red" class="color-swatch">
+                    <div id="color-picker">
+                        <div data-color="red" class="color-swatch">
+                        </div>
+                        <div data-color="orange" class="color-swatch">
+                        </div>
+                        <div data-color="green" class="color-swatch">
+                        </div>
+                        <div data-color="blue" class="color-swatch">
+                        </div>
+                        <div data-color="purple" class="color-swatch">
+                        </div>
+                        <div data-color="black" class="color-swatch color-swatch-selected">
+                        </div>
                     </div>
-                    <div data-color="orange" class="color-swatch">
-                    </div>
-                    <div data-color="green" class="color-swatch">
-                    </div>
-                    <div data-color="blue" class="color-swatch">
-                    </div>
-                    <div data-color="purple" class="color-swatch">
-                    </div>
-                    <div data-color="black" class="color-swatch color-swatch-selected">
-                    </div>
-                </div>
                 </div>
             </div>
             <!-- <div id="app-menu-subbar">
@@ -56,8 +62,8 @@
                 <div class="separator"></div>
                 <div class="dialog-section" id="toggles">
                     <span class="dialog-section-header">Modes</span>
-                    <!-- <button id="move-mode">Move</button>
-                    <button id="rect-mode">Rect</button> -->
+                     <button id="move-mode">Move</button>
+                    <button id="rect-mode">Rect</button>
                 </div>
                 <div class="separator"></div>
                 <div class="dialog-section" id="color-picker">

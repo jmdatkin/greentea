@@ -28,26 +28,13 @@ class QuadShape extends Shape {
             th = this.h;
 
 
-        let posVec = Transform.positionVector(tx,ty,1);
-        let screenMtx = Transform.screenMtx();
-
-        let mulVec = Transform.mul(posVec,screenMtx);
-
-        // tx += Store.store.x;
-        // ty += Store.store.y;
-
         tx += Store.store.x;
         ty += Store.store.y;
-
-        // tx += ptou(window.innerWidth/2);
-        // ty += ptou(window.innerHeight/2);
-
         
         tx /= -Store.store.z;
         ty /= -Store.store.z;
         tw /= Store.store.z;
         th /= Store.store.z;
-
 
 
         tx = utop(tx);//mulVec[0]);

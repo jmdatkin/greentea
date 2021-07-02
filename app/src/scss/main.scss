@@ -10,13 +10,17 @@ body {
 }
 
 body {
-    font-family: "Veranda", sans-serif;
+    font-family: "Montserrat", "Veranda", sans-serif;
 }
 
 button {
     background-color: #333;
     border: solid 1px #555;
     color: #fff;
+}
+
+button:active {
+    background-color: #222;
 }
 
 .app-menu-bar-wrapper {
@@ -76,7 +80,7 @@ button {
 
 #coord-indicator {
     width: 200px;
-    font-family: serif;
+    // font-family: serif;
 }
 
 .app-menu-bar-item {
@@ -124,6 +128,7 @@ button {
     top: $app-menu-bar-height;
     // box-sizing: border-box;
     height: calc(100% - #{$app-menu-bar-height});
+    background-color: '#fdfdfd';
 }
 
 .dialog {

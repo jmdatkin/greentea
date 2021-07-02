@@ -177,6 +177,7 @@ const CoordIndicator = (function() {
 })();
 
 const NicknameField = (function () {
+    return null;
     const inputElement = $("#nickname-field");
     const editButton = $("#nickname-toggle-edit");
 

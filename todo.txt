@@ -1,0 +1,8 @@
+Todo:
+    1. Fix drawing rectangles
+    2. Rewrite
+
+Possible features:
+    1. Fenced 'regions'
+        - inside a region, different chat room?
+        - Auxiliary data like todo list/notetaking
