@@ -162,33 +162,7 @@ const Canvas = (function (camera) {
         /*  https://github.com/cytoscape/cytoscape.js/blob/unstable/src/core/viewport.js  */
         let tx = -z2 / z * (cx - x) + cx;
         let ty = -z2 / z * (cy - y) + cy;
-        // x = tx;
-        // y = ty;
 
-
-        // let dx = cx;
-        // let dy = cy;
-
-        // x -= cx;
-        // y -= cy;
-
-        // dx /= z;
-        // dy /= z;
-
-        // x += dx*z2;
-        // y += dy*z2;
-
-        // let tx = x+cx;
-        // let ty = y+cy;
-
-        // tx /= z;
-        // ty /= z;
-
-        // tx += cx;
-        // ty += cy;
-
-        // x = tx;
-        // y = ty;
 
 
         Store.publish("view-move", {
