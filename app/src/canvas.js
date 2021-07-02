@@ -163,13 +163,13 @@ const Canvas = (function (camera) {
         // let dx = cx/ratio;
         // let dy = cy/ratio;
 
-        console.log(dx);
+        // console.log(dx);
 
-        x -= scale*dx;
-        y -= scale*dy;
+        // x -= scale*dx;
+        // y -= scale*dy;
 
-        x += cx;
-        x += cy;
+        // x += cx;
+        // x += cy;
 
         // x *= ratio;
         // y *= ratio;
@@ -201,8 +201,8 @@ const Canvas = (function (camera) {
         // x -= dx;
         // y -= dy;
 
-        dx = cx + 2*x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
-        dy = cy + 2*y - scale*dy;
+        dx = cx + x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
+        // dy = cy + y - scale*dy;
 
         // let dx = (ptou(e.pageX) - x)/scale;
         // let dy = (ptou(e.pageY) - y)/scale;
