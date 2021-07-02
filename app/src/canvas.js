@@ -251,8 +251,8 @@ const Canvas = (function (camera) {
         console.log(scaleFactor);
         canvas.viewportTransform[0] = scaleFactor;
         canvas.viewportTransform[3] = scaleFactor;
-        canvas.viewportTransform[4] = utop(store.x);
-        canvas.viewportTransform[5] = utop(store.y);
+        canvas.viewportTransform[4] = utop(-store.x)/store.z;
+        canvas.viewportTransform[5] = utop(-store.y)/store.z;
 
 
 
