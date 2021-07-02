@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.3",
+    "fabric": "^4.5.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.1",
     "jquery": "^3.5.1",

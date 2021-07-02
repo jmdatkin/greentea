@@ -1,13 +1,20 @@
 import { $, $$, floorMod, utop, ptou } from './util';
 import settings from './settings';
+import { fabric } from 'fabric';
 import Vector from './vector';
 import Camera from './camera';
 import Store from './store';
 import { QuadShape } from './shape';
 
 const Canvas = (function (camera) {
-    const canvas = $("#main-canv");
-    const ctx = canvas.getContext("2d");
+
+    fabric.Object.prototype.objectCaching = false;
+
+    const canvas = new fabric.Canvas('main-canv');
+
+
+    // const canvas = $("#main-canv");
+    // const ctx = canvas.getContext("2d");
 
     let width = 1600;
     let height = 900;
@@ -21,9 +28,21 @@ const Canvas = (function (camera) {
     const resize = function (w, h) {
         width = w;
         height = h;
-        canvas.width = width;
-        canvas.height = height;
+        canvas.setWidth(width); //FabricJS
+        canvas.setHeight(height);
     };
+
+    let grid = new fabric.Group();
+
+    let testSquare = new fabric.Rect({
+        left: 0,
+        top: 0,
+        width: 100,
+        height: 100,
+        fill: 'black'
+    });
+
+    canvas.add(testSquare);
 
     //size: size in pixels of each box
     const drawGrid = function (store, size) {
@@ -33,25 +52,42 @@ const Canvas = (function (camera) {
         let j = size - floorMod(ty, size);
 
         let ii = i;
-        ctx.beginPath();
+        let line;
         while (ii <= width) {             //Vertical lines
-            ctx.moveTo(ii, 0);
-            ctx.lineTo(ii, height);
+            line = new fabric.Line(
+                [ii,0,ii,height],
+                {
+                    selectable: false,
+                    stroke: 'black'
+                }
+            );
+            grid.add(line);
+            // ctx.moveTo(ii, 0)
+            // ctx.lineTo(ii, height);
             ii += size;
         }
 
         let jj = j;
         while (jj <= height) {
-            ctx.moveTo(0, jj);
-            ctx.lineTo(width, jj);
+            line = new fabric.Line(
+                [0,jj,width,jj],
+                {
+                    selectable: false,
+                    stroke: 'black'
+                }
+            );
+            grid.add(line);
             jj += size;
         }
-        ctx.stroke();
+
     };
 
     const drawAdaptiveGrid = function (store) {
+        grid = new fabric.Group();
         // const minorColor = "#e5e5e5";
         // const majorColor = "#dfdfdf";
+        grid.forEachObject(obj => grid.remove(obj));
+        // 
 
         let tx = store.x;
         let ty = store.y;
@@ -95,17 +131,19 @@ const Canvas = (function (camera) {
             majorMajorUnitSize *= 5;
         }
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = minorColor;
+        // ctx.lineWidth = 1;
+        // ctx.strokeStyle = minorColor;
         drawGrid(store, scaledUnitSize);
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = majorColor;
+        // ctx.lineWidth = 1;
+        // ctx.strokeStyle = majorColor;
         drawGrid(store, majorUnitSize);
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = mMajorColor;
+        // ctx.lineWidth = 1;
+        // ctx.strokeStyle = mMajorColor;
         drawGrid(store, majorMajorUnitSize);
+
+        // canvas.add(grid);
     };
 
 
@@ -122,14 +160,33 @@ const Canvas = (function (camera) {
         if (typeof store.shapeData === 'undefined') return -1;
         store.shapeData.shapes.forEach((val) => {
             let {x,y,w,h} = val.data;
-            let newShape = new QuadShape(x,y,w,h);
-            newShape.draw(ctx);
+            // let newShape = new QuadShape(x,y,w,h);
+            let newShape = new fabric.Rect({
+                left: x,
+                top: y,
+                fill: 'black',
+                width: w,
+                height: h
+            });
+            canvas.add(newShape);
+            // newShape.draw(ctx);
         });
     }
 
 
     const clear = function () {
         ctx.clearRect(0, 0, width, height);
+    };
+
+    const moveTo = function(x,y) {
+        let T = canvas.viewportTransform;
+        T[4] = x;
+        T[5] = y;
+    };
+
+    const zoomTo = function(z) {
+        let T = canvas.viewportTransform;
+        T[3] = z;
     };
 
 
@@ -140,20 +197,23 @@ const Canvas = (function (camera) {
 
 
     Store.subscribe('shapeUpdate', function(store) {
-        drawShapes(store);
+        // drawShapes(store);
     });
 
-    canvas.addEventListener("wheel", function (e) {
-        let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
+    canvas.on('mouse:wheel', function(opt) {
+        let delta = Math.max(-1,Math.min(opt.e.deltaY,1));    //Cap delta for x-browser consistency
+
 
         let {x,y,z} = Store.store;
 
-        let [cx, cy] = [ptou(e.pageX), ptou(e.pageY-canvas.offsetTop)];      //Mouse cursor position
+        // z = canvas.getZoom();
+        console.log(z);
+
+        let [cx, cy] = [ptou(opt.e.offsetX), ptou(opt.e.offsetY)];      //Mouse cursor position
 
         //Model to rendered position
         cx = cx*z + x;
         cy = cy*z + y;
-
 
         let dz = delta*z/20;                                //Change in z
 
@@ -163,6 +223,13 @@ const Canvas = (function (camera) {
         let tx = -z2 / z * (cx - x) + cx;
         let ty = -z2 / z * (cy - y) + cy;
 
+        // canvas.zoomToPoint(
+        //     {
+        //         x: opt.e.offsetX,
+        //         y: opt.e.offsetY
+        //     },
+        //     z2
+        //     );
 
 
         Store.publish("view-move", {
@@ -174,36 +241,27 @@ const Canvas = (function (camera) {
     });
 
     Store.subscribe("view-move", function (store) {
-        clear();
-        drawAdaptiveGrid(store);
-        drawShapes(store);
-        // ctx.beginPath();
-        // ctx.arc(utop(Store.virtual.x_mid),utop(Store.virtual.y_mid),15,0,2*Math.PI);
-        // ctx.closePath();
-        // ctx.fillStyle = 'black';
-        // ctx.fill();
+        render();
     });
 
     Store.subscribe("shape-draw-progress", function(store) {
-        clear();
-        drawAdaptiveGrid(store);
-        drawShapes(store);
-
-
+        render();
         store.tempShape.draw(ctx);
 
-        // let nx = (store.tempShape.x - Store.store.x)/50;
-        // let ny = (store.tempShape.y - Store.store.y)/50;
-        // let myNewShape = new QuadShape(nx,ny,store.tempShape.w,store.tempShape.h);
-        // myNewShape.draw(ctx);
-        // store.tempShape.draw(ctx);
     });
+
+    const render = function() {
+        drawAdaptiveGrid(Store.store);
+        canvas.renderAll();
+    };
 
     return {
         canvas: canvas,
         width: width,
         height: height,
         resize: resize,
+        moveTo: moveTo,
+        zoomTo: zoomTo
     };
 })(Camera);
 
