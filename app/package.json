@@ -1,30 +1,11 @@
 {
-  "name": "thoughtspace",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "dev": "webpack serve",
-    "startdev": "webpack serve --mode development --host 0.0.0.0"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "autoprefixer": "^10.1.0",
-    "css-loader": "^5.0.1",
-    "exports-loader": "^1.1.1",
-    "node-sass": "^5.0.0",
-    "postcss-loader": "^4.1.0",
-    "raw-loader": "^4.0.2",
-    "sass-loader": "^10.1.0",
-    "style-loader": "^2.0.0",
-    "webpack": "^5.12.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.1"
-  },
+  "name": "greentea",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
     "bootstrap": "^4.5.3",
     "fabric": "^4.5.1",
     "file-loader": "^6.2.0",
@@ -33,6 +14,34 @@
     "knockout": "^3.5.1",
     "popper.js": "^1.16.1",
     "socket.io": "^3.1.1",
-    "socket.io-client": "^3.1.1"
+    "socket.io-client": "^3.1.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
