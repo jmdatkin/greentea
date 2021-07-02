@@ -1,4 +1,4 @@
-import { $, $$, floorMod, lerp } from './util';
+import { $, $$, floorMod, utop, ptou } from './util';
 import settings from './settings';
 import Vector from './vector';
 import Camera from './camera';
@@ -14,7 +14,7 @@ const Canvas = (function (camera) {
 
     const coords = camera.coords;
 
-    const gridSize = settings.gridSize;
+    const unitSize = settings.unitSize;
     const fontSize = settings.fontSize;
     const fontFace = settings.fontFace;
 
@@ -25,9 +25,10 @@ const Canvas = (function (camera) {
         canvas.height = height;
     };
 
+    //size: size in pixels of each box
     const drawGrid = function (store, size) {
-        let tx = store.x;
-        let ty = store.y;
+        let tx = utop(store.x/store.z);
+        let ty = utop(store.y/store.z);
         let i = size - floorMod(tx, size);
         let j = size - floorMod(ty, size);
 
@@ -62,9 +63,9 @@ const Canvas = (function (camera) {
             tz /= modSize;
 
 
-        let scaledGridSize = gridSize / tz;
-        let majorGridSize = scaledGridSize * 5;
-        let majorMajorGridSize = majorGridSize * 5;
+        let scaledUnitSize = unitSize / tz;
+        let majorUnitSize = scaledUnitSize * 5;
+        let majorMajorUnitSize = majorUnitSize * 5;
 
         const scaleAlpha = (a, z, c) => 0.15*((c - z) / c);
 
@@ -88,23 +89,23 @@ const Canvas = (function (camera) {
         let a = 1.0;
 
 
-        if (majorGridSize <= gridSize) {
-            scaledGridSize *= 5;
-            majorGridSize *= 5;
-            majorMajorGridSize *= 5;
+        if (majorUnitSize <= unitSize) {
+            scaledUnitSize *= 5;
+            majorUnitSize *= 5;
+            majorMajorUnitSize *= 5;
         }
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = minorColor;
-        drawGrid(store, scaledGridSize);
+        drawGrid(store, scaledUnitSize);
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = majorColor;
-        drawGrid(store, majorGridSize);
+        drawGrid(store, majorUnitSize);
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = mMajorColor;
-        drawGrid(store, majorMajorGridSize);
+        drawGrid(store, majorMajorUnitSize);
     };
 
 
@@ -118,24 +119,9 @@ const Canvas = (function (camera) {
     };
 
     const drawShapes = function(store) {
+        if (typeof store.shapeData === 'undefined') return -1;
         store.shapeData.shapes.forEach((val) => {
             let {x,y,w,h} = val.data;
-
-            w /= Store.store.z;
-            h /= Store.store.z;
-            x /= 50;
-            y /= 50;
-            // x += Store.store.x;
-            // y += Store.store.y;
-            x /= Store.store.z;
-            y /= Store.store.z;
-            // x = val.data.x - 2*Store.store.x + Store.store.z*x;
-            // y = val.data.y - 2*Store.store.y + Store.store.z*y;
-
-      
-            x -= Store.store.x*Store.store.z;
-            y -= Store.store.y*Store.store.z;
-
             let newShape = new QuadShape(x,y,w,h);
             newShape.draw(ctx);
         });
@@ -159,21 +145,75 @@ const Canvas = (function (camera) {
 
     canvas.addEventListener("wheel", function (e) {
         let delta = Math.max(-1,Math.min(e.deltaY,1));    //Cap delta for x-browser consistency
-        let z = Store.store.z;
+
+        let {x,y,z} = Store.store;
+
+        let [cx, cy] = [ptou(e.pageX), ptou(e.pageY)];
+
         let dz = delta*z/20;
 
-
-        let dx = (e.pageX + Store.store.x)/z;
-        let dy = (e.pageY + Store.store.y)/z;
-
         let scale = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
+        let ratio = scale/z;//z;//scale/z;
 
-        dx = e.pageX + 2*Store.store.x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
-        dy = e.pageY + 2*Store.store.y - scale*dy;
+        let [dx, dy] = [cx + x, cy + y];
+
+        dx /= z;
+        dy /= z;
+
+        // let dx = cx/ratio;
+        // let dy = cy/ratio;
+
+        console.log(dx);
+
+        x -= scale*dx;
+        y -= scale*dy;
+
+        x += cx;
+        x += cy;
+
+        // x *= ratio;
+        // y *= ratio;
+
+        // x -= cx;
+        // y -= cy;
+
+        // x /= ratio;
+        // y /= ratio;
+
+        // let dx = (cx + x)/z;        
+        // let dy = (cy + y)/z;
+
+        // let scale = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
+
+        // dx *= scale;
+        // dy *= scale;
+
+        // let dx = scale*cx;
+        // let dy = cy;
+        
+        // x += dx;
+        // y += dy;
+
+        // x << 1;
+        // y << 1;
+        // x += cx;
+        // y += cy;
+        // x -= dx;
+        // y -= dy;
+
+        dx = cx + 2*x - scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
+        dy = cy + 2*y - scale*dy;
+
+        // let dx = (ptou(e.pageX) - x)/scale;
+        // let dy = (ptou(e.pageY) - y)/scale;
+
+
+        // dx = ptou(e.pageX) + 2*x + scale*dx;  //Dont exactly know why this works but 2*Store.store.x is the correct measurement
+        // dy = ptou(e.pageY) + 2*y + scale*dy;
 
         Store.publish("view-move", {
-            x: dx,
-            y: dy,
+            x: x,
+            y: y,
             z: scale
         });
 

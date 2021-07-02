@@ -1,5 +1,5 @@
 export default {
-    gridSize: 50,
+    unitSize: 50,
     fontSize: 32,
     minZoom: 0.25,
     maxZoom: 1200,
