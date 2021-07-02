@@ -189,6 +189,7 @@ const Canvas = (function (camera) {
         let T = canvas.viewportTransform;
         T[4] = x;
         T[5] = y;
+        testSquare.setCoords();
     };
 
     const zoomTo = function(z) {
