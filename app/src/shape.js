@@ -39,8 +39,8 @@ class QuadShape extends Shape {
         tx += Store.store.x;
         ty += Store.store.y;
 
-        tx += ptou(window.innerWidth/2);
-        ty += ptou(window.innerHeight/2);
+        // tx += ptou(window.innerWidth/2);
+        // ty += ptou(window.innerHeight/2);
 
         
         tx /= -Store.store.z;

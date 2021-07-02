@@ -148,19 +148,20 @@ const Canvas = (function (camera) {
 
         let {x,y,z} = Store.store;
 
-        let [cx, cy] = [ptou(e.pageX), ptou(e.pageY+canvas.offsetTop)];      //Mouse cursor position
+        let [cx, cy] = [ptou(e.pageX), ptou(e.pageY-canvas.offsetTop)];      //Mouse cursor position
+
+
+        console.log(cx);
 
         let dz = delta*z/20;                                //Change in z
 
-        let z2 = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
-;
+        let z2 = z + dz;//Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
 
         let tx = -z2 / z * (cx - x) + cx;
         let ty = -z2 / z * (cy - y) + cy;
 
         x = tx;
         y = ty;
-;
 
 
         // let dx = cx;
@@ -200,11 +201,11 @@ const Canvas = (function (camera) {
         clear();
         drawAdaptiveGrid(store);
         drawShapes(store);
-        ctx.beginPath();
-        ctx.arc(utop(Store.virtual.x_mid),utop(Store.virtual.y_mid),15,0,2*Math.PI);
-        ctx.closePath();
-        ctx.fillStyle = 'black';
-        ctx.fill();
+        // ctx.beginPath();
+        // ctx.arc(utop(Store.virtual.x_mid),utop(Store.virtual.y_mid),15,0,2*Math.PI);
+        // ctx.closePath();
+        // ctx.fillStyle = 'black';
+        // ctx.fill();
     });
 
     Store.subscribe("shape-draw-progress", function(store) {
