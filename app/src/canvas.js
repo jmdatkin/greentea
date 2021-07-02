@@ -8,7 +8,16 @@ import { QuadShape } from './shape';
 
 const Canvas = (function (camera) {
 
-    fabric.Object.prototype.objectCaching = false;
+    // fabric.Object.prototype.objectCaching = false;
+    fabric.Object.prototype.set({
+        cornerColor: 'white',
+        transparentCorners: false,
+        cornerSize: 6,
+        cornerStrokeColor: 'black',
+        objectCaching: false,
+        strokeUniform: true,
+        strokeWidth: 2
+    });
 
 
     const gridCanvas = $('#grid-canv');
@@ -43,7 +52,8 @@ const Canvas = (function (camera) {
         top: 0,
         width: 100,
         height: 100,
-        fill: 'black'
+        fill: 'white',
+        stroke: 'black'
     });
 
     canvas.add(testSquare);
