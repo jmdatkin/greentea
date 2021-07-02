@@ -150,6 +150,8 @@ const Canvas = (function (camera) {
 
         let [cx, cy] = [ptou(e.pageX), ptou(e.pageY-canvas.offsetTop)];      //Mouse cursor position
 
+        cx = cx*z + x;
+        cy = cy*z + y;
 
         console.log(cx);
 
@@ -159,9 +161,8 @@ const Canvas = (function (camera) {
 
         let tx = -z2 / z * (cx - x) + cx;
         let ty = -z2 / z * (cy - y) + cy;
-
-        x = tx;
-        y = ty;
+        // x = tx;
+        // y = ty;
 
 
         // let dx = cx;
@@ -190,8 +191,8 @@ const Canvas = (function (camera) {
 
 
         Store.publish("view-move", {
-            x: x,
-            y: y,
+            x: tx,
+            y: ty,
             z: z2
         });
 
