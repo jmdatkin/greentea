@@ -30,8 +30,8 @@ const BindButtonEvents = function () {
 
 const BindStoreEvents = function () {
     Store.subscribe('view-move', (store) => {
-        Canvas.moveTo(store.x,store.y);
-        Canvas.zoomTo(store.z);
+        // Canvas.moveTo(store.x,store.y);
+        // Canvas.zoomTo(store.z);
         CoordIndicator.update(store.x, store.y, store.z);
     });
 };

@@ -186,10 +186,10 @@ const Canvas = (function (camera) {
     };
 
     const moveTo = function(x,y) {
-        let T = canvas.viewportTransform;
-        T[4] = x;
-        T[5] = y;
-        testSquare.setCoords();
+        // let T = canvas.viewportTransform;
+        // T[4] = x;
+        // T[5] = y;
+        // testSquare.setCoords();
     };
 
     const zoomTo = function(z) {
@@ -211,11 +211,9 @@ const Canvas = (function (camera) {
     canvas.on('mouse:wheel', function(opt) {
         let delta = Math.max(-1,Math.min(opt.e.deltaY,1));    //Cap delta for x-browser consistency
 
-
         let {x,y,z} = Store.store;
 
         // z = canvas.getZoom();
-        console.log(z);
 
         let [cx, cy] = [ptou(opt.e.offsetX), ptou(opt.e.offsetY)];      //Mouse cursor position
 
@@ -236,7 +234,7 @@ const Canvas = (function (camera) {
         //         x: opt.e.offsetX,
         //         y: opt.e.offsetY
         //     },
-        //     z2
+        //     z2 
         //     );
 
 
@@ -249,6 +247,22 @@ const Canvas = (function (camera) {
     });
 
     Store.subscribe("view-move", function (store) {
+        let scaleFactor = 1/store.z;//settings.unitSize);
+        console.log(scaleFactor);
+        canvas.viewportTransform[0] = scaleFactor;
+        canvas.viewportTransform[3] = scaleFactor;
+        canvas.viewportTransform[4] = utop(store.x);
+        canvas.viewportTransform[5] = utop(store.y);
+
+
+
+        testSquare.setCoords();
+
+        // console.log(canvas.viewportTransform);
+        // canvas.viewportTransform = [
+        //     0,  0,   1,
+        //     store.x,    store.y,    -store.z
+        // ];
         render();
     });
 
