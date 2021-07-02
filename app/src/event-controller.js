@@ -34,6 +34,12 @@ const BindStoreEvents = function () {
         // Canvas.zoomTo(store.z);
         CoordIndicator.update(store.x, store.y, store.z);
     });
+    Store.subscribe('mode-change', function(store) {
+        if (store.mode === "move")
+            Canvas.canvas.selection = false;
+        else if (store.mode === "select")
+            Canvas.canvas.selection = true;
+    });
 };
 
 const BindSocketEvents = function () {
