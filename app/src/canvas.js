@@ -150,15 +150,16 @@ const Canvas = (function (camera) {
 
         let [cx, cy] = [ptou(e.pageX), ptou(e.pageY-canvas.offsetTop)];      //Mouse cursor position
 
+        //Model to rendered position
         cx = cx*z + x;
         cy = cy*z + y;
 
-        console.log(cx);
 
         let dz = delta*z/20;                                //Change in z
 
-        let z2 = z + dz;//Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
+        let z2 = Math.max(settings.minZoom,Math.min(z + dz, settings.maxZoom));
 
+        /*  https://github.com/cytoscape/cytoscape.js/blob/unstable/src/core/viewport.js  */
         let tx = -z2 / z * (cx - x) + cx;
         let ty = -z2 / z * (cy - y) + cy;
         // x = tx;

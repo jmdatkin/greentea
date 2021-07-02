@@ -121,8 +121,8 @@ const BindMouseEvents = function () {
 
             let sel_width = (ptou(m.pageX) - EventGroupStore.px)*Store.store.z; 
             let sel_height = (ptou(m.pageY - e.target.offsetTop) - EventGroupStore.py)*Store.store.z;
-            let nx = EventGroupStore.px + Store.store.x,
-                ny = EventGroupStore.py + Store.store.y
+            let nx = (EventGroupStore.px*-Store.store.z) + Store.store.x;//*-Store.store.z,
+            let ny = (EventGroupStore.py*-Store.store.z) + Store.store.y;//*-Store.store.z
             let tempShape = new QuadShape(nx, ny, sel_width, sel_height);
             Store.publish("shape-draw-progress", {
                 tempShape: tempShape
