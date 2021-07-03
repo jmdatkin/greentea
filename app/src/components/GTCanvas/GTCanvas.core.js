@@ -14,11 +14,15 @@ const FabricOpts = {
     objectCaching: false,
     strokeUniform: true,
     strokeWidth: 2,
-}
+};
 
 const MainCanvasOpts = {
     uniformScaling: false,
-    moveCursor: 'none'
+    moveCursor: 'none',
+    selectionColor: 'rgba(1.0,1.0,1.0,0.01)',
+    selectionBorderColor: 'rgba(1.0,1.0,1.0,0.5)',
+    selectionLineWidth: 1,
+    selectionDashArray: [7,5]
 };
 
 const BindMainCanvas = function (main_canvas) {
