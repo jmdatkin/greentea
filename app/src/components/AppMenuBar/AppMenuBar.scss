@@ -21,11 +21,12 @@
 }
 
 .AppMenuBar-logo {
-    background: url('./logo_white.png') no-repeat 0 0;
+    background: url('../../scss/kamui_logo_white.png') no-repeat 0 0;
     background-size: 25px;
     background-position: center;
     width: 35px;
     height: 35px;
+    margin-left: 5px;
 }
 
 .AppMenuBar-title {
