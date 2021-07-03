@@ -25,21 +25,35 @@ const PubSub = {
 };
 
 
-function GTApp() {
+class GTApp extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            coords: {
+                x: 0,
+                y: 0,
+                z: 1
+            }
+        };
+    }
 
+    // const [coords, setCoords] = React.useState({
+    //     x: 0,
+    //     y: 0,
+    //     z: 1
+    // });
+    componentDidMount() {
 
-    const [coords, setCoords] = React.useState({
-        x: 0,
-        y: 0,
-        z: 1
-    });
-    PubSub.subscribe('view-move', data => setCoords(data));
+        PubSub.subscribe('view-move', data => this.setState({coords: data}));
+    }
 
-    return (
-        <div className="GTApp">
-            <GTAppContainer coords={coords} PubSub={PubSub} />
-        </div>
-    );
+    render() {
+        return (
+            <div className="GTApp">
+                <GTAppContainer coords={this.state.coords} PubSub={PubSub} />
+            </div>
+        );
+    }
 }
 
 export default GTApp;

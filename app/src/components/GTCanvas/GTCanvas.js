@@ -75,7 +75,7 @@ class GTCanvas extends React.Component {
             top: 0,
             width: 100,
             height: 100,
-            fill: 'green',
+            fill: 'cyan',
             stroke: 'black',
             strokeWidth: 5
         });
