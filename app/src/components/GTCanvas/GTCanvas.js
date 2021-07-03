@@ -26,7 +26,6 @@ class GTCanvas extends React.Component {
     }
 
     componentDidMount = () => {
-        console.log('effect');
         MainCanvas = new fabric.Canvas(this.MainCanvasRef.current);
         GridCanvas = this.GridCanvasRef.current;
 
@@ -34,10 +33,6 @@ class GTCanvas extends React.Component {
         Core.BindGridCanvas(GridCanvas);
 
         Core.Init();
-
-        MainCanvas.on('mouse:down', (opt) => {
-            console.log('hey');
-        });
 
         let self = this;
 
@@ -58,8 +53,6 @@ class GTCanvas extends React.Component {
             /*  https://github.com/cytoscape/cytoscape.js/blob/unstable/src/core/viewport.js  */
             let tx = -z2 / z * (cx - x) + cx;
             let ty = -z2 / z * (cy - y) + cy;
-
-            console.log(tx);
 
             self.props.PubSub.emit("view-move", {
                 x: tx,
@@ -84,7 +77,6 @@ class GTCanvas extends React.Component {
 
         Core.drawAdaptiveGrid(this.state.coords, GridCanvas.getContext('2d'));
         this.props.PubSub.subscribe('view-move', (data) => {
-            console.log('viewmove');
             self.setState({
                 coords: data
             });
