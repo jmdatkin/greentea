@@ -82,7 +82,7 @@ class GTCanvas extends React.Component {
 
         MainCanvas.add(testSquare);
 
-        // Core.drawAdaptiveGrid(this.state.coords, GridCanvas.getContext('2d'));
+        Core.drawAdaptiveGrid(this.state.coords, GridCanvas.getContext('2d'));
         this.props.PubSub.subscribe('view-move', (data) => {
             console.log('viewmove');
             self.setState({

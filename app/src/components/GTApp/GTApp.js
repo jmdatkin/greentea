@@ -37,7 +37,7 @@ function GTApp() {
 
     return (
         <div className="GTApp">
-            <GTAppContainer PubSub={PubSub} />
+            <GTAppContainer coords={coords} PubSub={PubSub} />
         </div>
     );
 }

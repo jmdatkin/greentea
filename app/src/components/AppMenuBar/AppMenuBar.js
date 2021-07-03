@@ -2,7 +2,7 @@ import './logo_white.png';
 import './AppMenuBar.scss';
 
 
-function AppMenuBar() {
+function AppMenuBar(props) {
 
 
     return (
@@ -13,7 +13,7 @@ function AppMenuBar() {
                     GreenTea
                 </div>
                 <div className="AppMenuBar-item AppMenuBar-component">
-                    <span id="coord-indicator">x: 0, y: 0</span>
+                    <span id="coord-indicator">x: {props.coords.x.toFixed(2)}, y: {props.coords.y.toFixed(2)}, z: {props.coords.z.toFixed(2)}</span>
                 </div>
                 <div className="AppMenuBar-item AppMenuBar-component">
                     <button id="move-mode">Move</button>
