@@ -1,0 +1,15 @@
+@import "../../global.scss";
+
+.GTCanvas {
+    width: 100%;
+    height: calc(100% - #{$app-menu-bar-height});
+}
+
+.GTCanvas-inner {
+    position: relative;
+}
+
+.GTCanvas-canvas {
+    position: absolute;
+    top: 0;
+}

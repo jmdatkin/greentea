@@ -19,7 +19,7 @@ const IEvent = (function() {
 
         let self = this;
 
-        let interface = {       //Object passed into inner callback, used to interface with parent IEvent
+        let myInterface = {       //Object passed into inner callback, used to interface with parent IEvent
             handlers: self.IEvent.handlers,
             store: {
                 get: function(x) {
@@ -34,7 +34,7 @@ const IEvent = (function() {
         };
 
         this.cb = (e) => {  //Wrap callback with reference to store belonging to attached iEvent
-            this.inner(e, interface);
+            this.inner(e, myInterface);
         };
     };
     Handler.prototype.activate = function() {
