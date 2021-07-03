@@ -16,7 +16,7 @@ const Canvas = (function (camera) {
         cornerStrokeColor: 'black',
         objectCaching: false,
         strokeUniform: true,
-        strokeWidth: 2
+        strokeWidth: 2,
     });
 
 
@@ -24,6 +24,8 @@ const Canvas = (function (camera) {
     const ctx = gridCanvas.getContext('2d');
     const canvas = new fabric.Canvas('main-canv');
 
+
+    canvas.uniformScaling = false;
 
     // const canvas = $("#main-canv");
     // const ctx = canvas.getContext("2d");
