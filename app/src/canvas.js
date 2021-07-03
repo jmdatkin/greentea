@@ -25,7 +25,11 @@ const Canvas = (function (camera) {
     const canvas = new fabric.Canvas('main-canv');
 
 
-    canvas.uniformScaling = false;
+    canvas.set({
+        uniformScaling: false,
+        moveCursor: 'none'
+    })
+    // canvas.uniformScaling = false;
 
     // const canvas = $("#main-canv");
     // const ctx = canvas.getContext("2d");
@@ -53,8 +57,9 @@ const Canvas = (function (camera) {
         top: 0,
         width: 100,
         height: 100,
-        fill: 'white',
-        stroke: 'black'
+        fill: 'green',
+        stroke: 'black',
+        strokeWidth: 5
     });
 
     canvas.add(testSquare);
@@ -67,16 +72,8 @@ const Canvas = (function (camera) {
         let j = size - floorMod(ty, size);
 
         let ii = i;
-        let line;
         ctx.beginPath();
         while (ii <= width) {             //Vertical lines
-            line = new fabric.Line(
-                [ii,0,ii,height],
-                {
-                    selectable: false,
-                    stroke: 'black'
-                }
-            );
             ctx.moveTo(ii, 0)
             ctx.lineTo(ii, height);
             ii += size;
@@ -84,13 +81,6 @@ const Canvas = (function (camera) {
 
         let jj = j;
         while (jj <= height) {
-            line = new fabric.Line(
-                [0,jj,width,jj],
-                {
-                    selectable: false,
-                    stroke: 'black'
-                }
-            );
             ctx.moveTo(0,jj);
             ctx.lineTo(width,jj);
             jj += size;
@@ -106,6 +96,7 @@ const Canvas = (function (camera) {
 
         let modSize = 5;
 
+        // tz = Math.log(tz)/Math.log(modSize);
         while (tz >= modSize)
             tz /= modSize;
 

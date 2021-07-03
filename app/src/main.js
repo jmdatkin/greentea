@@ -6,16 +6,15 @@ import Store from "./store";
 import BindEvents from "./event-controller";
 
 require('./components/ko_GTApp/ko_GTApp');
-
-
-$(function() {
-    ko.applyBindings({});
-});
-
 const Init = function () {
     BindEvents();
     Canvas.resize(window.innerWidth, window.innerHeight);
     Store.publish('view-move');
 };
 
-Init();
+
+$(function() {
+    ko.applyBindings({});
+    Init();
+});
+
