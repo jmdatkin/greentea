@@ -47,7 +47,6 @@ const Canvas = (function (camera) {
         canvas.setHeight(height);
     };
 
-    let grid = new fabric.Group();
 
     let testSquare = new fabric.Rect({
         left: 0,
@@ -78,7 +77,6 @@ const Canvas = (function (camera) {
                     stroke: 'black'
                 }
             );
-            // grid.add(line);
             ctx.moveTo(ii, 0)
             ctx.lineTo(ii, height);
             ii += size;
@@ -102,12 +100,6 @@ const Canvas = (function (camera) {
 
     const drawAdaptiveGrid = function (store) {
         ctx.clearRect(0,0,width,height);
-        grid = new fabric.Group();
-        // const minorColor = "#e5e5e5";
-        // const majorColor = "#dfdfdf";
-        grid.forEachObject(obj => grid.remove(obj));
-        // 
-
         let tx = store.x;
         let ty = store.y;
         let tz = store.z;
@@ -162,24 +154,12 @@ const Canvas = (function (camera) {
         ctx.strokeStyle = mMajorColor;
         drawGrid(store, majorMajorUnitSize);
 
-        // canvas.add(grid);
-    };
-
-
-    const drawText = function (text, color) {
-        ctx.fillStyle = color;
-        let thisFontSize = settings.fontSize / camera.coords.z;
-        ctx.font = `${thisFontSize}px ${settings.fontFace}`;
-
-        //Adjust for offset between canvas text render and DOM style properties
-        ctx.fillText(text.value, text.x - coords.x, text.y + fontSize - 2 - coords.y);
     };
 
     const drawShapes = function(store) {
         if (typeof store.shapeData === 'undefined') return -1;
         store.shapeData.shapes.forEach((val) => {
             let {x,y,w,h} = val.data;
-            // let newShape = new QuadShape(x,y,w,h);
             let newShape = new fabric.Rect({
                 left: x,
                 top: y,
@@ -188,7 +168,6 @@ const Canvas = (function (camera) {
                 height: h
             });
             canvas.add(newShape);
-            // newShape.draw(ctx);
         });
     }
 
@@ -196,19 +175,6 @@ const Canvas = (function (camera) {
     const clear = function () {
         ctx.clearRect(0, 0, width, height);
     };
-
-    const moveTo = function(x,y) {
-        // let T = canvas.viewportTransform;
-        // T[4] = x;
-        // T[5] = y;
-        // testSquare.setCoords();
-    };
-
-    const zoomTo = function(z) {
-        let T = canvas.viewportTransform;
-        // T[3] = z;
-    };
-
 
     window.addEventListener("resize", () => {
         resize(window.innerWidth, window.innerHeight);
@@ -225,8 +191,6 @@ const Canvas = (function (camera) {
 
         let {x,y,z} = Store.store;
 
-        // z = canvas.getZoom();
-
         let [cx, cy] = [ptou(opt.e.offsetX), ptou(opt.e.offsetY)];      //Mouse cursor position
 
         //Model to rendered position
@@ -241,15 +205,6 @@ const Canvas = (function (camera) {
         let tx = -z2 / z * (cx - x) + cx;
         let ty = -z2 / z * (cy - y) + cy;
 
-        // canvas.zoomToPoint(
-        //     {
-        //         x: opt.e.offsetX,
-        //         y: opt.e.offsetY
-        //     },
-        //     z2 
-        //     );
-
-
         Store.publish("view-move", {
             x: tx,
             y: ty,
@@ -259,22 +214,14 @@ const Canvas = (function (camera) {
     });
 
     Store.subscribe("view-move", function (store) {
-        let scaleFactor = 1/store.z;//settings.unitSize);
-        console.log(scaleFactor);
+        let scaleFactor = 1/store.z;
         canvas.viewportTransform[0] = scaleFactor;
         canvas.viewportTransform[3] = scaleFactor;
         canvas.viewportTransform[4] = utop(-store.x)/store.z;
         canvas.viewportTransform[5] = utop(-store.y)/store.z;
 
-
-
         testSquare.setCoords();
 
-        // console.log(canvas.viewportTransform);
-        // canvas.viewportTransform = [
-        //     0,  0,   1,
-        //     store.x,    store.y,    -store.z
-        // ];
         render();
     });
 
@@ -294,8 +241,6 @@ const Canvas = (function (camera) {
         width: width,
         height: height,
         resize: resize,
-        moveTo: moveTo,
-        zoomTo: zoomTo
     };
 })(Camera);
 
