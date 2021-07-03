@@ -1,4 +1,4 @@
-export default {
+const settings = {
     unitSize: 50,
     fontSize: 32,
     minZoom: 0.25,
@@ -46,3 +46,5 @@ export default {
     },
     developmentMode: true
 };
+
+export default settings;
