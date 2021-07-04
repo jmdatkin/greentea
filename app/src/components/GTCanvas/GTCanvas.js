@@ -17,7 +17,7 @@ let testSquare = new fabric.Rect({
     top: 0,
     width: 100,
     height: 100,
-    fill: `rgba(${settings.colors["orange"].r},${settings.colors.["orange"].g},${settings.colors["orange"].b},1.0)`,
+    fill: `rgba(${settings.colors["blue"].r},${settings.colors["blue"].g},${settings.colors["blue"].b},1.0)`,
     stroke: 'black',
     strokeWidth: 3
 });
