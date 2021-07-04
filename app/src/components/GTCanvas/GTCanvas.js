@@ -73,28 +73,33 @@ class GTCanvas extends React.Component {
             strokeWidth: 3
         });
 
-        MainCanvas.on('object:scaling', (opt) => {
-            console.log('fired');
-            let {scaleX,scaleY} = opt.target;
-            let s = settings.unitSize;
-            let ws = s/opt.target.width;
-            let hs = s/opt.target.height;
-            console.log(scaleX);
-            opt.target.set({
-                scaleX: Math.round(scaleX/ws)*ws,
-                scaleY: Math.round(scaleY/hs)*hs,
-            })
-            opt.target.setCoords();
-        });
-        MainCanvas.on('object:moving', (opt) => {
-            let {left,top} = opt.target;
-            let s = settings.unitSize;
-            opt.target.set({
-                left: Math.round(left/s)*s,
-                top: Math.round(top/s)*s,
-            })
-            opt.target.setCoords();
-        });
+        // MainCanvas.on('object:scaling', (opt) => {
+        //     let {left,top,scaleX,scaleY} = opt.target;
+        //     console.log(scaleX);
+        //     let s = settings.unitSize;
+        //     let ws = Math.abs(s/opt.target.width);
+        //     let hs = Math.abs(s/opt.target.height);
+        //     opt.target.set({
+        //         left: Math.round(left/s)*s,
+        //         top: Math.round(top/s)*s,
+        //         scaleX: Math.round(scaleX/ws)*ws,
+        //         scaleY: Math.round(scaleY/hs)*hs,
+        //     })
+        //     opt.target.setCoords();
+        // });
+        // MainCanvas.on('object:moving', (opt) => {
+        //     let {scaleX,scaleY,left,top} = opt.target;
+        //     let s = settings.unitSize;
+        //     let ws = Math.abs(s/opt.target.width);
+        //     let hs = Math.abs(s/opt.target.height);
+        //     opt.target.set({
+        //         left: Math.round(left/s)*s,
+        //         top: Math.round(top/s)*s,
+        //         scaleX: Math.round(scaleX/ws)*ws,
+        //         scaleY: Math.round(scaleY/hs)*hs,
+        //     })
+        //     opt.target.setCoords();
+        // });
 
         MainCanvas.add(testSquare);
 
@@ -118,7 +123,6 @@ class GTCanvas extends React.Component {
     }
 
     shouldComponentUpdate() {
-
         return false;
     }
 
