@@ -22,7 +22,7 @@ const MainCanvasOpts = {
     selectionColor: 'rgba(1.0,1.0,1.0,0.01)',
     selectionBorderColor: 'rgba(1.0,1.0,1.0,0.5)',
     selectionLineWidth: 1,
-    selectionDashArray: [7,5]
+    selectionDashArray: [7, 5]
 };
 
 const BindMainCanvas = function (main_canvas) {
@@ -35,6 +35,7 @@ const BindGridCanvas = function (grid_canvas) {
 
 const BindEvents = function () {
     window.addEventListener("resize", () => {
+        console.log('resize');
         resize(window.innerWidth, window.innerHeight);
     });
 };
@@ -62,10 +63,8 @@ const resize = function (w, h) {
 };
 
 
-
 const unitSize = settings.unitSize;
-const fontSize = settings.fontSize;
-const fontFace = settings.fontFace;
+
 //size: size in pixels of each box
 const drawGrid = function (store, size) {
     let ctx = GridCanvas.getContext("2d");
@@ -91,15 +90,14 @@ const drawGrid = function (store, size) {
     ctx.stroke();
 };
 
+const scaleAlpha = (a, z, c) => 0.15 * ((c - z) / c);
+const getAlphaString = alpha => `rgba(0,0,0,${alpha})`;
+
 const drawAdaptiveGrid = function (store, ctx) {
-    ctx.clearRect(0, 0, width, height);
-    let tx = store.x;
-    let ty = store.y;
     let tz = store.z;
 
     let modSize = 5;
 
-    // tz = Math.log(tz)/Math.log(modSize);
     while (tz >= modSize)
         tz /= modSize;
 
@@ -108,26 +106,18 @@ const drawAdaptiveGrid = function (store, ctx) {
     let majorUnitSize = scaledUnitSize * 5;
     let majorMajorUnitSize = majorUnitSize * 5;
 
-    const scaleAlpha = (a, z, c) => 0.15 * ((c - z) / c);
 
     const baseMinorAlpha = 0.45;
     const scaledMinorAlpha = scaleAlpha(baseMinorAlpha, tz, modSize);
-
-
-    const minorColor = `rgba(1.0, 1.0, 1.0, ${scaledMinorAlpha})`;
+    const minorColor = getAlphaString(scaledMinorAlpha);
 
     const baseMajorAlpha = 0.5;
     const scaledMajorAlpha = scaleAlpha(baseMajorAlpha, tz, modSize * 2);
-
-    const majorColor = `rgba(1.0, 1.0, 1.0, ${scaledMajorAlpha})`;
-
+    const majorColor = getAlphaString(scaledMajorAlpha);
 
     const baseMMajorAlpha = 0.65;
     const scaledMMajorAlpha = scaleAlpha(baseMMajorAlpha, tz, modSize * 3);
-
-    const mMajorColor = `rgba(1.0, 1.0, 1.0, ${scaledMMajorAlpha})`;
-
-    let a = 1.0;
+    const mMajorColor = getAlphaString(scaledMMajorAlpha);
 
 
     if (majorUnitSize <= unitSize) {
@@ -150,7 +140,9 @@ const drawAdaptiveGrid = function (store, ctx) {
 
 };
 
-
+const clear = function(canv) {
+    canv.getContext('2d').clearRect(0,0,canv.width,canv.height);
+};
 
 
 const render = function () {
@@ -162,7 +154,8 @@ const Core = {
     BindMainCanvas: BindMainCanvas,
     BindGridCanvas: BindGridCanvas,
     Init: Init,
-    drawAdaptiveGrid: drawAdaptiveGrid
+    drawAdaptiveGrid: drawAdaptiveGrid,
+    clear: clear
 };
 
 export default Core;
