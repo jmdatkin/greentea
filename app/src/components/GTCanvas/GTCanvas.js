@@ -70,7 +70,7 @@ class GTCanvas extends React.Component {
             height: 100,
             fill: 'cyan',
             stroke: 'black',
-            strokeWidth: 5
+            strokeWidth: 3
         });
 
         MainCanvas.add(testSquare);
@@ -80,7 +80,7 @@ class GTCanvas extends React.Component {
             self.setState({
                 coords: data
             });
-            testSquare.strokeWidth = 5*data.z;
+            testSquare.strokeWidth = 3*data.z;
             let scaleFactor = 1 / data.z;
             MainCanvas.viewportTransform[0] = scaleFactor;
             MainCanvas.viewportTransform[3] = scaleFactor;
@@ -98,6 +98,9 @@ class GTCanvas extends React.Component {
         return false;
     }
 
+    componentWillUmount() {
+        return false;
+    }
 
     render() {
         return (
