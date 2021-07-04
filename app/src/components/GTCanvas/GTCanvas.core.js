@@ -14,6 +14,7 @@ const FabricOpts = {
     objectCaching: false,
     strokeUniform: true,
     strokeWidth: 2,
+    snapAngle: 15
 };
 
 const MainCanvasOpts = {
