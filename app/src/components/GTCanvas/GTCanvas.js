@@ -80,6 +80,7 @@ class GTCanvas extends React.Component {
             self.setState({
                 coords: data
             });
+            testSquare.strokeWidth = 5*data.z;
             let scaleFactor = 1 / data.z;
             MainCanvas.viewportTransform[0] = scaleFactor;
             MainCanvas.viewportTransform[3] = scaleFactor;
