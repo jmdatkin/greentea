@@ -18,7 +18,10 @@ const emit = function (evt, data = {}) {
 
 const PubSub = {
     emit: emit,
-    subscribe: subscribe
+    subscribe: subscribe,
+    unsubscribe: evt => {
+        delete events[evt];
+    }
 };
 
 

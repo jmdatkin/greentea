@@ -1,6 +1,9 @@
 import React from 'react';
 import { fabric } from 'fabric';
 
+import PureCanvas from './PureCanvas';
+import PureFabricCanvas from './PureFabricCanvas';
+
 import { utop, ptou } from '../../util/util';
 import settings from '../../settings';
 
@@ -8,8 +11,16 @@ import Core from './GTCanvas.core';
 
 import './GTCanvas.scss';
 
-let MainCanvas, GridCanvas;
 
+        let testSquare = new fabric.Rect({
+            left: 0,
+            top: 0,
+            width: 100,
+            height: 100,
+            fill: `rgba(${settings.colors["orange"].r},${settings.colors.["orange"].g},${settings.colors["orange"].b},1.0)`,
+            stroke: 'black',
+            strokeWidth: 3
+        });
 class GTCanvas extends React.Component {
 
     constructor(props) {
@@ -25,18 +36,23 @@ class GTCanvas extends React.Component {
         this.GridCanvasRef = React.createRef();
     }
 
-    componentDidMount = () => {
-        MainCanvas = new fabric.Canvas(this.MainCanvasRef.current);
-        GridCanvas = this.GridCanvasRef.current;
+    getContext(name,ctx) {
+        this[name] = ctx;
+    }
 
-        Core.BindMainCanvas(MainCanvas);
-        Core.BindGridCanvas(GridCanvas);
+    componentDidMount = () => {
+        // MainCanvas = new fabric.Canvas(this.MainCanvasRef.current);
+        // GridCanvas = this.GridCanvasRef.current;
+
+
+        Core.BindMainCanvas(this.MainCanvas);
+        Core.BindGridCanvas(this.GridCanvas);
 
         Core.Init();
 
         let self = this;
 
-        MainCanvas.on('mouse:wheel', function (opt) {
+        this.MainCanvas.on('mouse:wheel', function (opt) {
             let delta = Math.max(-1, Math.min(opt.e.deltaY, 1));    //Cap delta for x-browser consistency
 
             let { x, y, z } = self.state.coords;
@@ -63,73 +79,38 @@ class GTCanvas extends React.Component {
         });
 
 
-        let testSquare = new fabric.Rect({
-            left: 0,
-            top: 0,
-            width: 100,
-            height: 100,
-            fill: 'cyan',
-            stroke: 'black',
-            strokeWidth: 3
-        });
 
-        // MainCanvas.on('object:scaling', (opt) => {
-        //     let {left,top,scaleX,scaleY} = opt.target;
-        //     console.log(scaleX);
-        //     let s = settings.unitSize;
-        //     let ws = Math.abs(s/opt.target.width);
-        //     let hs = Math.abs(s/opt.target.height);
-        //     opt.target.set({
-        //         left: Math.round(left/s)*s,
-        //         top: Math.round(top/s)*s,
-        //         scaleX: Math.round(scaleX/ws)*ws,
-        //         scaleY: Math.round(scaleY/hs)*hs,
-        //     })
-        //     opt.target.setCoords();
-        // });
-        // MainCanvas.on('object:moving', (opt) => {
-        //     let {scaleX,scaleY,left,top} = opt.target;
-        //     let s = settings.unitSize;
-        //     let ws = Math.abs(s/opt.target.width);
-        //     let hs = Math.abs(s/opt.target.height);
-        //     opt.target.set({
-        //         left: Math.round(left/s)*s,
-        //         top: Math.round(top/s)*s,
-        //         scaleX: Math.round(scaleX/ws)*ws,
-        //         scaleY: Math.round(scaleY/hs)*hs,
-        //     })
-        //     opt.target.setCoords();
-        // });
+        this.MainCanvas.add(testSquare);
 
-        MainCanvas.add(testSquare);
-
-        Core.drawAdaptiveGrid(this.state.coords, GridCanvas.getContext('2d'));
+        Core.drawAdaptiveGrid(this.state.coords, this.GridCanvas.getContext('2d'));
         this.props.PubSub.subscribe('view-move', (data) => {
             self.setState({
                 coords: data
             });
-            testSquare.strokeWidth = 3*data.z;
-            let scaleFactor = 1 / data.z;
-            MainCanvas.viewportTransform[0] = scaleFactor;
-            MainCanvas.viewportTransform[3] = scaleFactor;
-            MainCanvas.viewportTransform[4] = utop(-data.x) / data.z;
-            MainCanvas.viewportTransform[5] = utop(-data.y) / data.z;
-            testSquare.setCoords();
-            Core.drawAdaptiveGrid(this.state.coords, GridCanvas.getContext('2d'));
-            MainCanvas.renderAll();
         });
 
         testSquare.setCoords();
     }
 
-    shouldComponentUpdate() {
-        return false;
+    componentDidUpdate() {
+        let coords = this.state.coords;
+            testSquare.strokeWidth = 3*coords.z;
+            let scaleFactor = 1 / coords.z;
+            this.MainCanvas.viewportTransform[0] = scaleFactor;
+            this.MainCanvas.viewportTransform[3] = scaleFactor;
+            this.MainCanvas.viewportTransform[4] = utop(-coords.x) / coords.z;
+            this.MainCanvas.viewportTransform[5] = utop(-coords.y) / coords.z;
+            testSquare.setCoords();
+            Core.drawAdaptiveGrid(this.state.coords, this.GridCanvas.getContext('2d'));
+            this.MainCanvas.renderAll();
+
     }
 
     componentWillUmount() {
-        MainCanvas.off('object:moving');
-        MainCanvas.off('object:scaling');
-        MainCanvas.off('mouse:wheel');
+        this.MainCanvas.off('object:moving');
+        this.MainCanvas.off('object:scaling');
+        this.MainCanvas.off('mouse:wheel');
+        this.props.PubSub.unsubscribe('view-move');
         return false;
     }
 
@@ -137,8 +118,10 @@ class GTCanvas extends React.Component {
         return (
             <div className="GTCanvas">
                 <div className="GTCanvas-inner">
-                    <canvas ref={this.GridCanvasRef} className="GTCanvas-canvas" id="GTCanvas_grid_canv"></canvas>
-                    <canvas ref={this.MainCanvasRef} className="GTCanvas-canvas" id="GTCanvas_main_canv"></canvas>
+                    <PureCanvas contextRef={this.getContext.bind(this)}></PureCanvas>
+                    <PureFabricCanvas contextRef={this.getContext.bind(this)}></PureFabricCanvas>
+                    {/* <canvas ref={this.GridCanvasRef} className="GTCanvas-canvas" id="GTCanvas_grid_canv"></canvas>
+                    <canvas ref={this.MainCanvasRef} className="GTCanvas-canvas" id="GTCanvas_main_canv"></canvas> */}
                 </div>
             </div>
         );
