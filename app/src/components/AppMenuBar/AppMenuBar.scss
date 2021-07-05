@@ -6,7 +6,7 @@
     min-height: $app-menu-bar-height;
     align-items: center;
 
-    background: #2d2d2d; /* Old browsers */
+    background: $app-menu-bar-bgColor; /* Old browsers */
     // background: -moz-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* FF3.6-15 */
     // background: -webkit-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* Chrome10-25,Safari5.1-6 */
     // background: linear-gradient(
@@ -19,6 +19,11 @@
 
     color: #fdfdfd;
     box-sizing: border-box;
+}
+
+.AppMenuBar-LeftSidebarSeparator {
+    height: 100%;
+    border-right: solid 1px $app-borderColor;
 }
 
 .AppMenuBar-logo {

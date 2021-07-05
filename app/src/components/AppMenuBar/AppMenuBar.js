@@ -8,6 +8,7 @@ function AppMenuBar(props) {
 
     return (
         <div className="AppMenuBar">
+                <div style={{width: props.offset}} className="AppMenuBar-LeftSidebarSeparator"></div>
                 <div className="AppMenuBar-item AppMenuBar-logo">
                 </div>
                 <div className="AppMenuBar-item AppMenuBar-title">

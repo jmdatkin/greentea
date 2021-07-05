@@ -1,9 +1,7 @@
-
-import { $, $$, floorMod, utop, ptou } from '../../util/util';
+import { floorMod, utop, ptou } from '../../util/util';
 import settings from '../../settings';
 import { fabric } from 'fabric';
 
-let Store = {};
 let MainCanvas, GridCanvas;
 
 const FabricOpts = {
@@ -45,9 +43,9 @@ const Init = function () {
     fabric.Object.prototype.set(FabricOpts);
     MainCanvas.set(MainCanvasOpts);
 
-    resize(window.innerWidth, window.innerHeight);
+    // resize(window.innerWidth, window.innerHeight);
 
-    BindEvents();
+    // BindEvents();
     // MainCanvas.add(testSquare);
 };
 
@@ -121,11 +119,12 @@ const drawAdaptiveGrid = function (store, ctx) {
     const mMajorColor = getAlphaString(scaledMMajorAlpha);
 
 
-    if (majorUnitSize <= unitSize) {
-        scaledUnitSize *= 5;
-        majorUnitSize *= 5;
-        majorMajorUnitSize *= 5;
-    }
+    //These lines of code seem unncessary but idk
+    // if (majorUnitSize <= unitSize) {
+    //     scaledUnitSize *= 5;
+    //     majorUnitSize *= 5;
+    //     majorMajorUnitSize *= 5;
+    // }
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = minorColor;
@@ -145,18 +144,13 @@ const clear = function(canv) {
     canv.getContext('2d').clearRect(0,0,canv.width,canv.height);
 };
 
-
-const render = function () {
-    drawAdaptiveGrid(Store.store);
-    MainCanvas.renderAll();
-};
-
 const Core = {
     BindMainCanvas: BindMainCanvas,
     BindGridCanvas: BindGridCanvas,
     Init: Init,
     drawAdaptiveGrid: drawAdaptiveGrid,
-    clear: clear
+    clear: clear,
+    resize: resize
 };
 
 export default Core;

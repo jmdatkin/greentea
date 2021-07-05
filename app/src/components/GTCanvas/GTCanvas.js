@@ -7,7 +7,7 @@ import PureFabricCanvas from './PureFabricCanvas';
 import { utop, ptou } from '../../util/util';
 import settings from '../../settings';
 
-import Core from './GTCanvas.core';
+import GTCanvasCore from './GTCanvas.core';
 
 import './GTCanvas.scss';
 
@@ -28,10 +28,12 @@ class GTCanvas extends React.Component {
     }
 
     componentDidMount = () => {
-        Core.BindMainCanvas(this.MainCanvas);
-        Core.BindGridCanvas(this.GridCanvas);
+        GTCanvasCore.BindMainCanvas(this.MainCanvas);
+        GTCanvasCore.BindGridCanvas(this.GridCanvas);
 
-        Core.Init();
+        GTCanvasCore.Init();
+
+        GTCanvasCore.resize(this.props.width, window.innerHeight);
 
         let self = this;
 
@@ -63,7 +65,7 @@ class GTCanvas extends React.Component {
 
         this.MainCanvas.add(testSquare);
 
-        Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
+        GTCanvasCore.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
         testSquare.setCoords();
     }
 
@@ -77,8 +79,8 @@ class GTCanvas extends React.Component {
         this.MainCanvas.viewportTransform[4] = utop(-coords.x) / coords.z;
         this.MainCanvas.viewportTransform[5] = utop(-coords.y) / coords.z;
         testSquare.setCoords();
-        Core.clear(this.GridCanvas);
-        Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
+        GTCanvasCore.clear(this.GridCanvas);
+        GTCanvasCore.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
         this.MainCanvas.renderAll();
 
     }
@@ -91,7 +93,7 @@ class GTCanvas extends React.Component {
 
     render() {
         return (
-            <div className="GTCanvas">
+            <div style={{width: this.props.width}}className="GTCanvas">
                 <div className="GTCanvas-inner">
                     <PureCanvas contextRef={this.getContext.bind(this)}></PureCanvas>
                     <PureFabricCanvas contextRef={this.getContext.bind(this)}></PureFabricCanvas>

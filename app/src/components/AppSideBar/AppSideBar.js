@@ -7,8 +7,8 @@ function AppSideBar(props) {
 
 
     return (
-        <div style={{width: props.width+"px"}} className="AppSideBar">
-          
+        <div style={props.style} className="AppSideBar">
+          aher
         </div>
     );
 }
