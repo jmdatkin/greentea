@@ -3,11 +3,6 @@ import { fabric } from 'fabric';
 
 class PureFabricCanvas extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
-
-
     shouldComponentUpdate() {
         return false;
     }
