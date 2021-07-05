@@ -35,6 +35,19 @@ class GTCanvas extends React.Component {
 
         let self = this;
 
+        //Change resizing function to change object width/height vs scale transform
+        this.MainCanvas.on('object:scaling', opt => {
+            let {width,height,scaleX,scaleY} = opt.target;
+            let newWidth = width*scaleX;
+            let newHeight = height*scaleY;
+            opt.target.set({
+                width: newWidth,
+                height: newHeight,
+                scaleX: 1,
+                scaleY: 1
+            });
+        });
+
         this.MainCanvas.on('mouse:wheel', function (opt) {
             let delta = Math.max(-1, Math.min(opt.e.deltaY, 1));    //Cap delta for x-browser consistency
 
