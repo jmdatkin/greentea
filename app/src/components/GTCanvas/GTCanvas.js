@@ -2,6 +2,9 @@ import React from 'react';
 import { fabric } from 'fabric';
 import { coordSelector } from '../../gt-redux/selectors/sel_coords';
 
+import PureCanvas from './PureCanvas';
+import PureFabricCanvas from './PureFabricCanvas';
+
 import { utop, ptou } from '../../util/util';
 import settings from '../../settings';
 
@@ -9,38 +12,47 @@ import Core from './GTCanvas.core';
 
 import './GTCanvas.scss';
 
-let MainCanvas, GridCanvas;
 
+let testSquare = new fabric.Rect({
+    left: 0,
+    top: 0,
+    width: 100,
+    height: 100,
+    fill: `rgba(${settings.colors["blue"].r},${settings.colors["blue"].g},${settings.colors["blue"].b},1.0)`,
+    stroke: 'black',
+    strokeWidth: 3
+});
 class GTCanvas extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            coords: {
-                x: 0,
-                y: 0,
-                z: 1
-            }
-        };
-        this.MainCanvasRef = React.createRef();
-        this.GridCanvasRef = React.createRef();
+    getContext(name, ctx) {
+        this[name] = ctx;
     }
 
     componentDidMount = () => {
-        MainCanvas = new fabric.Canvas(this.MainCanvasRef.current);
-        GridCanvas = this.GridCanvasRef.current;
-
-        Core.BindMainCanvas(MainCanvas);
-        Core.BindGridCanvas(GridCanvas);
+        Core.BindMainCanvas(this.MainCanvas);
+        Core.BindGridCanvas(this.GridCanvas);
 
         Core.Init();
 
         let self = this;
 
-        MainCanvas.on('mouse:wheel', function (opt) {
+        //Change resizing function to change object width/height vs scale transform
+        this.MainCanvas.on('object:scaling', opt => {
+            let {width,height,scaleX,scaleY} = opt.target;
+            let newWidth = width*scaleX;
+            let newHeight = height*scaleY;
+            opt.target.set({
+                width: newWidth,
+                height: newHeight,
+                scaleX: 1,
+                scaleY: 1
+            });
+        });
+
+        this.MainCanvas.on('mouse:wheel', function (opt) {
             let delta = Math.max(-1, Math.min(opt.e.deltaY, 1));    //Cap delta for x-browser consistency
 
-            let { x, y, z } = self.state.coords;
+            let { x, y, z } = self.props.coords;
             let [cx, cy] = [ptou(opt.e.offsetX), ptou(opt.e.offsetY)];      //Mouse cursor position
 
             //Model to rendered position
@@ -72,6 +84,7 @@ class GTCanvas extends React.Component {
 
         });
 
+        this.MainCanvas.add(testSquare);
 
         let testSquare = new fabric.Rect({
             left: 0,
@@ -103,17 +116,34 @@ class GTCanvas extends React.Component {
         testSquare.setCoords();
     }
 
-    shouldComponentUpdate() {
-        return false;
+    componentDidUpdate() {
+        // let coords = this.state.coords;
+        let coords = this.props.coords;
+        testSquare.strokeWidth = 3 * coords.z;
+        let scaleFactor = 1 / coords.z;
+        this.MainCanvas.viewportTransform[0] = scaleFactor;
+        this.MainCanvas.viewportTransform[3] = scaleFactor;
+        this.MainCanvas.viewportTransform[4] = utop(-coords.x) / coords.z;
+        this.MainCanvas.viewportTransform[5] = utop(-coords.y) / coords.z;
+        testSquare.setCoords();
+        Core.clear(this.GridCanvas);
+        Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
+        this.MainCanvas.renderAll();
+
     }
 
+    componentWillUmount() {
+        this.MainCanvas.off('object:moving');
+        this.MainCanvas.off('object:scaling');
+        this.MainCanvas.off('mouse:wheel');
+    }
 
     render() {
         return (
             <div className="GTCanvas">
                 <div className="GTCanvas-inner">
-                    <canvas ref={this.GridCanvasRef} className="GTCanvas-canvas" id="GTCanvas_grid_canv"></canvas>
-                    <canvas ref={this.MainCanvasRef} className="GTCanvas-canvas" id="GTCanvas_main_canv"></canvas>
+                    <PureCanvas contextRef={this.getContext.bind(this)}></PureCanvas>
+                    <PureFabricCanvas contextRef={this.getContext.bind(this)}></PureFabricCanvas>
                 </div>
             </div>
         );

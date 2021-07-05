@@ -3,20 +3,21 @@
 .AppMenuBar {
     display: flex;
     width: 100%;
-    height: $app-menu-bar-height;
+    min-height: $app-menu-bar-height;
+    align-items: center;
 
-    background: #222222; /* Old browsers */
-    background: -moz-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(
-        to bottom,
-        #222222 0%,
-        #303030 55%,
-        #474747 100%
-    ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#474747',GradientType=0 ); /* IE6-9 */
+    background: #2d2d2d; /* Old browsers */
+    // background: -moz-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* FF3.6-15 */
+    // background: -webkit-linear-gradient(top, #222222 0%, #303030 55%, #474747 100%); /* Chrome10-25,Safari5.1-6 */
+    // background: linear-gradient(
+    //     to bottom,
+    //     #222222 0%,
+    //     #303030 55%,
+    //     #474747 100%
+    // ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    // filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222222', endColorstr='#474747',GradientType=0 ); /* IE6-9 */
 
-    color: #fff;
+    color: #fdfdfd;
     box-sizing: border-box;
 }
 
@@ -45,4 +46,9 @@
 
 .AppMenuBar-component {
     min-width: 200px;
+}
+
+span {
+    font-family: monospace;
+    letter-spacing: -1pt;
 }

@@ -1,4 +1,5 @@
 import AppMenuBar from '../AppMenuBar/AppMenuBar';
+import AppSideBar from '../AppSideBar/AppSideBar';
 import GTCanvas from '../GTCanvas/GTCanvas';
 
 import './GTAppContainer.css';
@@ -8,7 +9,7 @@ function GTAppContainer(props) {
     return (
         <div className="GTAppContainer">
             <AppMenuBar coords={props.coords}/>
-            <GTCanvas d={props.d} PubSub={props.PubSub}/>
+            <GTCanvas coords={props.coords} PubSub={props.PubSub}/>
         </div>
     );
 }
