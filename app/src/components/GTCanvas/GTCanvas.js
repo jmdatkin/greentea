@@ -67,24 +67,13 @@ class GTCanvas extends React.Component {
             let tx = -z2 / z * (cx - x) + cx;
             let ty = -z2 / z * (cy - y) + cy;
 
-            this.props.d({
-            // store.dispatch({
-                type: 'viewport-move',
-                payload: {
-                    x: tx,
-                    y: ty,
-                    z: z2
-                }
+            self.props.PubSub.emit("view-move", {
+                x: tx,
+                y: ty,
+                z: z2
             });
-            // self.props.PubSub.emit("view-move", {
-            //     x: tx,
-            //     y: ty,
-            //     z: z2
-            // });
 
         });
-
-        this.MainCanvas.add(testSquare);
 
         let testSquare = new fabric.Rect({
             left: 0,
@@ -96,22 +85,9 @@ class GTCanvas extends React.Component {
             strokeWidth: 5
         });
 
-        MainCanvas.add(testSquare);
+        this.MainCanvas.add(testSquare);
 
-        Core.drawAdaptiveGrid(this.state.coords, GridCanvas.getContext('2d'));
-
-        store.subscribe(() => {
-            // let state = store.getState();
-            let data = useSelector(coordSelector);
-            let scaleFactor = 1 / data.z;
-            MainCanvas.viewportTransform[0] = scaleFactor;
-            MainCanvas.viewportTransform[3] = scaleFactor;
-            MainCanvas.viewportTransform[4] = utop(-data.x) / data.z;
-            MainCanvas.viewportTransform[5] = utop(-data.y) / data.z;
-            testSquare.setCoords();
-            Core.drawAdaptiveGrid(data, GridCanvas.getContext('2d'));
-            MainCanvas.renderAll();
-        });
+        Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
 
         testSquare.setCoords();
     }
