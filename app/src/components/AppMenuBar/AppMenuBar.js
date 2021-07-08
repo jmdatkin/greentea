@@ -1,7 +1,13 @@
 // import './kamui_logo_white.png';
+import { connect } from 'react-redux';
 import './logo_white.png';
 import './AppMenuBar.scss';
 
+function mapStateToProps(state) {
+    return {
+        coords: state.coords
+    };
+}
 
 function AppMenuBar(props) {
 
@@ -20,4 +26,4 @@ function AppMenuBar(props) {
     );
 }
 
-export default AppMenuBar;
+export default connect(mapStateToProps)(AppMenuBar);

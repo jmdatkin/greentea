@@ -46,7 +46,7 @@ class GTApp extends React.Component {
     render() {
         return (
             <div className="GTApp">
-                <GTAppContainer d={this.props.d} coords={this.state.coords} PubSub={PubSub} />
+                <GTAppContainer dispatch={this.props.dispatch} coords={this.state.coords} PubSub={PubSub} />
             </div>
         );
     }

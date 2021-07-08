@@ -15,7 +15,7 @@ function App() {
   return (
     <Provider store={store}>
       <div className="App">
-        <GTApp d={dispatch} />
+        <GTApp dispatch={dispatch} />
       </div>
     </Provider>
   );

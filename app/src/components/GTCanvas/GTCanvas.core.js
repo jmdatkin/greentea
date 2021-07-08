@@ -47,7 +47,7 @@ const Init = function () {
 
     resize(window.innerWidth, window.innerHeight);
 
-    BindEvents();
+    // BindEvents();
     // MainCanvas.add(testSquare);
 };
 
@@ -141,14 +141,31 @@ const drawAdaptiveGrid = function (store, ctx) {
 
 };
 
-const clear = function(canv) {
-    canv.getContext('2d').clearRect(0,0,canv.width,canv.height);
+const clear = function (canv) {
+    canv.getContext('2d').clearRect(0, 0, canv.width, canv.height);
 };
 
+const zoomFromPos = function (coords, pos, zoom) {
+    let { x, y, z } = coords;
+    let [ cx, cy ] = [pos.x, pos.y];
 
-const render = function () {
-    drawAdaptiveGrid(Store.store);
-    MainCanvas.renderAll();
+    //Model to rendered position
+    cx = cx * z + x;
+    cy = cy * z + y;
+
+    let dz = zoom * z / 20;                                //Change in z
+
+    let tz = Math.max(settings.minZoom, Math.min(z + dz, settings.maxZoom));
+
+    /*  https://github.com/cytoscape/cytoscape.js/blob/unstable/src/core/viewport.js  */
+    let tx = -tz / z * (cx - x) + cx;
+    let ty = -tz / z * (cy - y) + cy;
+    
+    return {
+        x: tx,
+        y: ty,
+        z: tz
+    };
 };
 
 const Core = {
@@ -156,6 +173,8 @@ const Core = {
     BindGridCanvas: BindGridCanvas,
     Init: Init,
     drawAdaptiveGrid: drawAdaptiveGrid,
+    zoomFromPos: zoomFromPos,
+    resize: resize,
     clear: clear
 };
 
