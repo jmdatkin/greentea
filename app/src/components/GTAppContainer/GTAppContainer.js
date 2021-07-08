@@ -8,7 +8,7 @@ function GTAppContainer(props) {
 
     return (
         <div className="GTAppContainer">
-            <AppMenuBar />
+            <AppMenuBar dispatch={props.dispatch} />
             <GTCanvas dispatch={props.dispatch} PubSub={props.PubSub}/>
         </div>
     );

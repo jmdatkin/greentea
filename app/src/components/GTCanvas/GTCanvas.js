@@ -2,6 +2,8 @@ import React from 'react';
 import { fabric } from 'fabric';
 import { connect } from 'react-redux';
 
+import { RectFigure } from '../../figure';
+
 import PureCanvas from './PureCanvas';
 import PureFabricCanvas from './PureFabricCanvas';
 
@@ -12,22 +14,15 @@ import Core from './GTCanvas.core';
 
 import './GTCanvas.scss';
 
-
-let testSquare = new fabric.Rect({
-    left: 0,
-    top: 0,
-    width: 100,
-    height: 100,
-    fill: `rgba(${settings.colors["blue"].r},${settings.colors["blue"].g},${settings.colors["blue"].b},1.0)`,
-    stroke: 'black',
-    strokeWidth: 3
-});
-
 function mapState(state) {
     return {
-        coords: state.coords
+        userMode: state.userMode,
+        coords: state.coords,
+        figures: state.figures
     };
 }
+
+let tempFig;
 
 class GTCanvas extends React.Component {
 
@@ -50,7 +45,82 @@ class GTCanvas extends React.Component {
             payload: newCoords
         });
 
-        testSquare.setCoords();
+    }
+
+    rectModeMouseDown(opt) {
+        let [x, y] = [opt.e.offsetX, opt.e.offsetY];
+        
+        // x += utop(this.props.coords.x);
+        // y += utop(this.props.coords.y);
+
+        let point = new fabric.Point(x,y);
+        let invM = fabric.util.invertTransform(this.MainCanvas.viewportTransform);
+        let pointT = fabric.util.transformPoint(point, invM);
+        // this.setState({
+        //     tempFig: new RectFigure({
+        //         left: x,
+        //         top: y,
+        //         width: 0,
+        //         height: 0
+        //     })
+        // });
+
+        x = pointT.x;
+        y = pointT.y;
+
+        tempFig = new RectFigure({
+            left: x,
+            top: y,
+            width: 0,
+            height: 0
+        });
+        this.MainCanvas.on('mouse:move', this.rectModeMouseMove);
+        this.MainCanvas.on('mouse:up', this.rectModeMouseUp);
+    }
+
+    rectModeMouseMove = opt => {
+        let [x, y] = [opt.e.offsetX, opt.e.offsetY];
+        
+        // x += utop(this.props.coords.x);
+        // y += utop(this.props.coords.y);
+
+
+        let point = new fabric.Point(x,y);
+        let invM = fabric.util.invertTransform(this.MainCanvas.viewportTransform);
+        let pointT = fabric.util.transformPoint(point, invM);
+
+        x = pointT.x;
+        y = pointT.y;
+
+        let [dx, dy] = [x - tempFig.left, y - tempFig.top];
+
+        tempFig.width = dx;
+        tempFig.figure.width = dx;
+        tempFig.height = dy;
+        tempFig.figure.height = dy;
+    }
+
+    rectModeMouseUp = () => {
+        this.props.dispatch({
+            type: 'add-figure',
+            payload: tempFig
+        });
+        this.MainCanvas.off('mouse:move');
+        this.MainCanvas.off('mouse:up');
+    }
+
+    mainMouseDownHandler = e => {
+        switch (this.props.userMode) {
+            case 'move':
+                console.log('mousedown when move');
+                break;
+            //Do move stuff
+            case 'rect':
+                console.log('rect');
+                this.rectModeMouseDown(e);
+                break;
+            default: return;
+        }
     }
 
     componentDidMount = () => {
@@ -66,6 +136,7 @@ class GTCanvas extends React.Component {
             Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
         });
 
+        this.MainCanvas.on('mouse:down', this.mainMouseDownHandler);
         //Change resizing function to change object width/height vs scale transform
         // this.MainCanvas.on('object:scaling', opt => {
         //     let {width,height,scaleX,scaleY} = opt.target;
@@ -80,16 +151,18 @@ class GTCanvas extends React.Component {
         // });
 
         this.MainCanvas.on('mouse:wheel', this.mouseWheelHandler.bind(this));
-        this.MainCanvas.add(testSquare);
 
         Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
 
-        testSquare.setCoords();
     }
 
     componentDidUpdate() {
+        this.MainCanvas.clear();
+        this.props.figures.forEach(fig => {
+            fig.figure.strokeWidth = fig.strokeWidth * this.props.coords.z;
+            this.MainCanvas.add(fig.figure);
+        });
         let coords = this.props.coords;
-        testSquare.strokeWidth = 3 * coords.z;
         let scaleFactor = 1 / coords.z;
         this.MainCanvas.viewportTransform[0] = scaleFactor;
         this.MainCanvas.viewportTransform[3] = scaleFactor;
@@ -97,7 +170,6 @@ class GTCanvas extends React.Component {
         this.MainCanvas.viewportTransform[5] = utop(-coords.y) / coords.z;
         Core.clear(this.GridCanvas);
         Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
-        testSquare.setCoords();
         this.MainCanvas.renderAll();
     }
 
