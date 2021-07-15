@@ -3,7 +3,6 @@ import { $, $$, floorMod, utop, ptou } from '../../util/util';
 import settings from '../../settings';
 import { fabric } from 'fabric';
 
-let Store = {};
 let MainCanvas, GridCanvas;
 
 const FabricOpts = {
@@ -54,13 +53,27 @@ const Init = function () {
 let width = 1600,
     height = 900;
 
+
+
+const resizeMain = function(w,h) {
+    MainCanvas.setWidth(w);
+    MainCanvas.setHeight(h);
+};
+
+const resizeGrid = function(w,h) {
+    GridCanvas.width = w
+    GridCanvas.height = h
+}
+
 const resize = function (w, h) {
     width = w;
     height = h;
-    MainCanvas.setWidth(width); //FabricJS
-    MainCanvas.setHeight(height);
-    GridCanvas.width = width;
-    GridCanvas.height = height;
+    resizeMain(w,h);
+    resizeGrid(w,h);
+    // MainCanvas.setWidth(width); //FabricJS
+    // MainCanvas.setHeight(height);
+    // GridCanvas.width = width;
+    // GridCanvas.height = height;
 };
 
 
@@ -94,8 +107,9 @@ const drawGrid = function (store, size) {
 const scaleAlpha = (a, z, c) => 0.15 * ((c - z) / c);
 const getAlphaString = alpha => `rgba(0,0,0,${alpha})`;
 
-const drawAdaptiveGrid = function (store, ctx) {
-    let tz = store.z;
+const drawAdaptiveGrid = function (coords) {
+    let tz = coords.z;
+    let ctx = GridCanvas.getContext('2d');
 
     let modSize = 5;
 
@@ -127,22 +141,19 @@ const drawAdaptiveGrid = function (store, ctx) {
         majorMajorUnitSize *= 5;
     }
 
-    ctx.lineWidth = 1;
     ctx.strokeStyle = minorColor;
-    drawGrid(store, scaledUnitSize, ctx);
+    drawGrid(coords, scaledUnitSize);
 
-    ctx.lineWidth = 1;
     ctx.strokeStyle = majorColor;
-    drawGrid(store, majorUnitSize, ctx);
+    drawGrid(coords, majorUnitSize);
 
-    ctx.lineWidth = 1;
     ctx.strokeStyle = mMajorColor;
-    drawGrid(store, majorMajorUnitSize, ctx);
+    drawGrid(coords, majorMajorUnitSize);
 
 };
 
-const clear = function (canv) {
-    canv.getContext('2d').clearRect(0, 0, canv.width, canv.height);
+const clearGridCanvas = function () {
+    GridCanvas.getContext('2d').clearRect(0, 0, GridCanvas.width, GridCanvas.height);
 };
 
 const zoomFromPos = function (coords, pos, zoom) {
@@ -168,14 +179,46 @@ const zoomFromPos = function (coords, pos, zoom) {
     };
 };
 
+const setMainCanvasViewportTransform = function(coords) {
+    let scaleFactor = 1/coords.z;
+    MainCanvas.viewportTransform[0] = scaleFactor;
+    MainCanvas.viewportTransform[3] = scaleFactor;
+    MainCanvas.viewportTransform[4] = utop(-coords.x) / coords.z;
+    MainCanvas.viewportTransform[5] = utop(-coords.y) / coords.z;
+};
+
+
+const Main = {
+    bind: BindMainCanvas,
+    resize: resizeMain,
+    setViewportTransform: setMainCanvasViewportTransform
+};
+
+const Grid = {
+    bind: BindGridCanvas,
+    resize: resizeGrid,
+    draw: drawAdaptiveGrid,
+    clear: clearGridCanvas
+};
+
 const Core = {
+    // Main: {
+    //     bind: BindMainCanvas,
+    //     setViewportTransform: setMainCanvasViewportTransform
+    // },
+    // Grid: {
+    //     bind: BindGridCanvas,
+    //     draw: drawAdaptiveGrid
+    // },
+    Main: Main,
+    Grid: Grid,
     BindMainCanvas: BindMainCanvas,
     BindGridCanvas: BindGridCanvas,
     Init: Init,
     drawAdaptiveGrid: drawAdaptiveGrid,
     zoomFromPos: zoomFromPos,
     resize: resize,
-    clear: clear
+    // clear: clear
 };
 
 export default Core;

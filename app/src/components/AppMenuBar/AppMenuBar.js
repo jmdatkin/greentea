@@ -46,6 +46,9 @@ function AppMenuBar(props) {
             <div className="AppMenuBar-item AppMenuBar-component">
                 <button onClick={() => { props.dispatch({type: 'user-change-mode',payload: 'rect'})}}>Rect Mode</button>
             </div>
+            <div className="AppMenuBar-item AppMenuBar-component">
+                <button onClick={() => { props.dispatch({type: 'user-change-mode',payload: 'select'})}}>Select Mode</button>
+            </div>
         </div>
     );
 }

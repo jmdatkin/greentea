@@ -26,8 +26,25 @@ let tempFig;
 
 class GTCanvas extends React.Component {
 
+    //Callback to get references to child canvas objects
     getContext(name, ctx) {
         this[name] = ctx;
+    }
+
+    gridCanvRefAcquired() {
+        return this.hasOwnProperty('GridCanvas');
+    }
+
+    mainCanvRefAcquired() {
+        return this.hasOwnProperty('MainCanvas');
+    }
+
+    bothCanvRefsAcquired() {
+        return this.gridCanvRefAcquired() && this.mainCanvRefAcquired();
+    }
+
+    drawGrid() {
+        Core.Grid.draw(this.props.coords);
     }
 
     mouseWheelHandler(opt) {
@@ -44,29 +61,52 @@ class GTCanvas extends React.Component {
             type: 'viewport-move',
             payload: newCoords
         });
+    }
 
+    moveModeMouseDown = opt => {
+        let [cx, cy] = [opt.e.offsetX, opt.e.offsetY];
+        let data = {
+            cx: cx,
+            cy: cy,
+            mouseDownWorldCoords: this.props.coords,
+        };
+        this.doMoveModeMousemove(data);
+    }
+
+    doMoveModeMousemove = data => {
+        let {cx,cy,mouseDownWorldCoords} = data;
+
+        const innerMouseMove = opt => {
+            let dx = opt.e.offsetX - cx;
+            let dy = opt.e.offsetY - cy;
+            
+            this.props.dispatch({
+                type: 'viewport-move',
+                payload: {
+                    x: mouseDownWorldCoords.x - ptou(dx)*mouseDownWorldCoords.z,
+                    y: mouseDownWorldCoords.y - ptou(dy)*mouseDownWorldCoords.z,
+                    z: mouseDownWorldCoords.z
+                }
+            });
+        };
+        this.MainCanvas.on('mouse:move', innerMouseMove);
+        this.MainCanvas.on('mouse:up', this.generalMouseUp);
+    }
+
+    generalMouseUp = () => {
+        this.MainCanvas.off('mouse:move');
+        this.MainCanvas.off('mouse:up');
     }
 
     rectModeMouseDown(opt) {
-        let [x, y] = [opt.e.offsetX, opt.e.offsetY];
-        
-        // x += utop(this.props.coords.x);
-        // y += utop(this.props.coords.y);
+        let [cx, cy] = [opt.e.offsetX, opt.e.offsetY];
 
-        let point = new fabric.Point(x,y);
-        let invM = fabric.util.invertTransform(this.MainCanvas.viewportTransform);
-        let pointT = fabric.util.transformPoint(point, invM);
-        // this.setState({
-        //     tempFig: new RectFigure({
-        //         left: x,
-        //         top: y,
-        //         width: 0,
-        //         height: 0
-        //     })
-        // });
+        let point = new fabric.Point(cx,cy);      //Cursor pos
+        let invM = fabric.util.invertTransform(this.MainCanvas.viewportTransform);  //Inverse viewport transform
+        let pointT = fabric.util.transformPoint(point, invM);   //Pos in world space
 
-        x = pointT.x;
-        y = pointT.y;
+        let x = pointT.x;
+        let y = pointT.y;
 
         tempFig = new RectFigure({
             left: x,
@@ -80,11 +120,7 @@ class GTCanvas extends React.Component {
 
     rectModeMouseMove = opt => {
         let [x, y] = [opt.e.offsetX, opt.e.offsetY];
-        
-        // x += utop(this.props.coords.x);
-        // y += utop(this.props.coords.y);
-
-
+   
         let point = new fabric.Point(x,y);
         let invM = fabric.util.invertTransform(this.MainCanvas.viewportTransform);
         let pointT = fabric.util.transformPoint(point, invM);
@@ -105,18 +141,17 @@ class GTCanvas extends React.Component {
             type: 'add-figure',
             payload: tempFig
         });
-        this.MainCanvas.off('mouse:move');
-        this.MainCanvas.off('mouse:up');
+        this.generalMouseUp();
+        // this.MainCanvas.off('mouse:move');
+        // this.MainCanvas.off('mouse:up');
     }
 
     mainMouseDownHandler = e => {
         switch (this.props.userMode) {
             case 'move':
-                console.log('mousedown when move');
+                this.moveModeMouseDown(e);
                 break;
-            //Do move stuff
             case 'rect':
-                console.log('rect');
                 this.rectModeMouseDown(e);
                 break;
             default: return;
@@ -124,16 +159,19 @@ class GTCanvas extends React.Component {
     }
 
     componentDidMount = () => {
-        Core.BindMainCanvas(this.MainCanvas);
+        //Check if canvases are bound
+        if (!this.bothCanvRefsAcquired()) {
+            console.error("Error: at least one canvas not bound");
+            return;
+        }
+        Core.BindMainCanvas(this.MainCanvas);   //Embed references to dom elements in GTCanvas.core module
         Core.BindGridCanvas(this.GridCanvas);
 
         Core.Init();
 
-        let self = this;
-
         window.addEventListener('resize', () => {
             Core.resize(window.innerWidth, window.innerHeight);
-            Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
+            this.drawGrid();
         });
 
         this.MainCanvas.on('mouse:down', this.mainMouseDownHandler);
@@ -152,9 +190,10 @@ class GTCanvas extends React.Component {
 
         this.MainCanvas.on('mouse:wheel', this.mouseWheelHandler.bind(this));
 
-        Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
-
+        this.drawGrid();
     }
+
+
 
     componentDidUpdate() {
         this.MainCanvas.clear();
@@ -162,18 +201,21 @@ class GTCanvas extends React.Component {
             fig.figure.strokeWidth = fig.strokeWidth * this.props.coords.z;
             this.MainCanvas.add(fig.figure);
         });
-        let coords = this.props.coords;
-        let scaleFactor = 1 / coords.z;
-        this.MainCanvas.viewportTransform[0] = scaleFactor;
-        this.MainCanvas.viewportTransform[3] = scaleFactor;
-        this.MainCanvas.viewportTransform[4] = utop(-coords.x) / coords.z;
-        this.MainCanvas.viewportTransform[5] = utop(-coords.y) / coords.z;
-        Core.clear(this.GridCanvas);
-        Core.drawAdaptiveGrid(this.props.coords, this.GridCanvas.getContext('2d'));
+
+        if (this.props.userMode === 'move') {
+            this.MainCanvas.set('selection',false);
+        } else {
+            this.MainCanvas.set('selection',true);
+        }
+
+        Core.Main.setViewportTransform(this.props.coords);
+        Core.Grid.clear();
+        Core.Grid.draw(this.props.coords);
         this.MainCanvas.renderAll();
     }
 
     componentWillUnmount() {
+        //Unbind all events
         this.MainCanvas.off('object:moving');
         this.MainCanvas.off('object:scaling');
         this.MainCanvas.off('mouse:wheel');
